@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<levelData>
+	<level>
+		<wall>D
+			<doorNumber>0</doorNumber>
+			<locked>false</locked>
+			<exitTo>1</exitTo>
+		</wall>
+		<wall>D
+			<doorNumber>1</doorNumber>
+			<locked>true</locked>
+			<key>K1</key>
+			<exitTo>2</exitTo>
+		</wall>
+		<wall>X</wall>
+		<wall>X</wall>
+		<items>N</items>
+		<monsters>
+			<monsterName>Blob</monsterName>
+			<monsterhp>20</monsterhp>
+			<monsterstrength>10</monsterstrength>
+		</monsters>
+		<monsters>
+			<monsterName>Blob</monsterName>
+			<monsterhp>20</monsterhp>
+			<monsterstrength>10</monsterstrength>
+		</monsters>
+		<monsters>
+			<monsterName>Blob</monsterName>
+			<monsterhp>20</monsterhp>
+			<monsterstrength>10</monsterstrength>
+		</monsters>
+	</level>
+	<level>
+		<wall>X</wall>
+		<wall>X</wall>
+		<wall>D
+			<doorNumber>0</doorNumber>
+			<locked>N</locked>
+			<exitTo>0</exitTo>
+		</wall>
+		<wall>X</wall>
+		<items>Y</items>
+		<item>
+			<itemName>Golden Key</itemName>
+			<itemType>key</itemType>
+			<itemID>K1</itemID>
+			<itemLocationX>100</itemLocationX>
+			<itemLocationY>100</itemLocationY>
+		</item>
+	</level>
+	<level>
+		<wall>X</wall>
+		<wall>X</wall>
+		<wall>X</wall>
+		<wall>D
+			<doorNumber>0</doorNumber>
+			<locked>N</locked>
+			<exitTo>0</exitTo>
+		</wall>
+		<items>N</items>
+	</level>
+</levelData>
+	
