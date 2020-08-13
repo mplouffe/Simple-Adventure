@@ -29,7 +29,8 @@ var levelRndEncounterFactor;
 
 function OverWorldState(section, canvas, player){
 	// initialize some variables
-	this.stateName = "overworld";
+    this.stateName = "overworld";
+    this.needsRefresh = true;
 	levelBuilt = false;
 	currentLevelWalls = [];
 	currentLevelDoors = [];
