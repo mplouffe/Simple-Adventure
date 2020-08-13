@@ -28,7 +28,7 @@ body{
 canvas{
 	display: block;
 	background-color: #0bf;
-	margin: auto;
+    margin: auto;
 }
 
 p{

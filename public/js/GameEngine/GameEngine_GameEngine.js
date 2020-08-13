@@ -31,8 +31,10 @@ var owWidth = 820;
 
 function load()
 {
+    topBorder = document.createElement('topBorder');
 	canvas = document.createElement('canvas');
-	gameWindow = document.createElement('section');
+    gameWindow = document.createElement('section');
+    gameWindow.appendChild(topBorder);
 	gameWindow.appendChild(canvas);
 	
 	directions = ['N', 'E', 'S', 'W'];
