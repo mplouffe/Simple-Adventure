@@ -4,6 +4,10 @@
  * Date Created: 06.27.2016
  * Last Update: 08.26.2016
  * Author: Matheu Plouffe
+ * 
+ * History:
+ * 0.1 - Initial implementation
+ * 0.2 - updating state housekeeping functions
  */
 
 
@@ -89,7 +93,13 @@ OverWorldState.prototype.update = function(){
 		levelBuilt = true;
 	}
 	this.player.Object.checkCollision(this.player, playerColliders);
-	this.player.update();
+    this.player.update();
+    
+    if (this.player.stepped === true)
+    {
+        currentLevelRndEncounterEngine.addSteps(1);
+    }
+
 	if(this.loadNextLevel())
 	{
 		levelBuilt = false;
@@ -122,9 +132,14 @@ OverWorldState.prototype.render = function(){
 	this.player.render();
 }
 
-OverWorldState.prototype.cleanUp = function()
+OverWorldState.prototype.removeState = function()
 {
+	ui.parentElement.removeChild(ui);
+}
 
+OverWorldState.prototype.coverState = function()
+{
+    ui.parentElement.removeChild(ui);
 }
 
 /* BuildLevel
@@ -143,7 +158,6 @@ OverWorldState.prototype.buildLevel = function(levelNumber){
 	// build the walls
 	for(let i = 0; i < walls.length; i++)
 	{
-
 		let checkForDoor = walls[i].firstChild.nodeValue;
 		let doorStatus = (checkForDoor.charAt(0) == 'D');
 		if(doorStatus)

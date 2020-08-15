@@ -27,13 +27,6 @@ function FightState(section, canvas, enemy){
 	this.readDelay = 0;
 	this.numberOfBlinks = 0;
 	this.blinkCounter = 0;
-
-	// cleaning up the overworld UI
-	// WRONG! each state should clean up after itself and set itself up
-	console.log("overworld Clean up called.");
-	let uiToRemove = document.getElementById('overworldUI');
-	console.log("uiToRemove " + uiToRemove);
-	uiToRemove.parentElement.removeChild(uiToRemove);
 	
 	// creating the fight interface
 	fi = new FightInterface(section, canvas);
@@ -222,12 +215,23 @@ FightState.prototype.render = function(){
 	}
 }
 
-// Refresh
-// Can't remember what this is for...
-FightState.prototype.refresh = function(){
+// refresh
+// Used when this state is re-loaded after a state above it on the stack is popped off
+FightState.prototype.refresh = function() {
 
 }
 
+// removeState
+// Used when this state is removed from the stack
+FightState.prototype.removeState = function() {
+
+}
+
+// coverState
+// Used when this state is covered by another state on the stack
+FightState.prototype.coverState = function() {
+
+}
 
 
 /* Left Menu State */
@@ -360,6 +364,14 @@ LeftMenuState.prototype.refresh = function()
 	this.render();
 }
 
+LeftMenuState.prototype.removeState = function() {
+
+}
+
+LeftMenuState.prototype.coverState = function() {
+
+}
+
 
 /* Right Menu State */
 /* Check the Left Menu State for details on each method */
@@ -459,7 +471,13 @@ RightMenuState.prototype.refresh = function()
 	this.render();
 }
 
+RightMenuState.prototype.removeState = function() {
 
+}
+
+RightMenuState.prototype.coverState = function() {
+    
+}
 
 
 /* Text Boxes State*/
@@ -540,6 +558,14 @@ ScrollTextState.prototype.readyForNextBox = function(){
 	this.textPrinted = true;
 }
 
+ScrollTextState.prototype.removeState = function() {
+
+}
+
+ScrollTextState.prototype.coverState = function() {
+    
+}
+
 
 /* Fight Win State */
 // only has the name of the state
@@ -552,6 +578,13 @@ function FightWinState(){
 // empty function
 FightWinState.prototype.render = function(){}
 
+FightWinState.prototype.removeState = function() {
+
+}
+
+FightWinState.prototype.coverState = function() {
+    
+}
 
 /* Game Over State */
 // only has the name of the state
@@ -564,7 +597,13 @@ function GameOverState(){
 // empty function
 GameOverState.prototype.render = function(){}
 
+GameOverState.prototype.removeState = function() {
 
+}
+
+GameOverState.prototype.coverState = function() {
+    
+}
 /* Run Away State */
 // only has the name of the state
 // the logic is implemented by the update of the fight state
@@ -574,3 +613,11 @@ function RunAwayState(){
 // render
 // empty function
 RunAwayState.prototype.render = function(){}
+
+RunAwayState.prototype.removeState = function() {
+
+}
+
+RunAwayState.prototype.coverState = function() {
+    
+}

@@ -25,7 +25,6 @@ Object.prototype.move = function(x, y)
 {
 	this.x += x;
 	this.y += y;
-	currentLevelRndEncounterEngine.addSteps(2);
 }
 
 // COLLISION DETECTION SYSTEM

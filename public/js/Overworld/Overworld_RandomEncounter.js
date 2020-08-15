@@ -30,7 +30,6 @@ RndEncounterEngine.prototype.addSteps = function(steps)
 		if(this.nextEncounter <= 0)
 		{
 			this.nextEncounter = resetRndEncounterCounter();
-			stateMachine.currentState.cleanUp();
 			this.triggerRndEncounter();
 		}
 	}
@@ -57,7 +56,7 @@ RndEncounterEngine.prototype.removeCurrentMonsterFromList = function()
 
 function resetRndEncounterCounter()
 {
-	let max = 255;
-	let min = 64;
+	let max = 5;
+	let min = 5;
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }

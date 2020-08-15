@@ -29,6 +29,11 @@ var directions;
 var owHeight = 600;
 var owWidth = 820;
 
+// timing
+var start;
+var lastTick;
+var deltaTime;
+
 function load()
 {
 	canvas = document.createElement('canvas');
@@ -51,14 +56,19 @@ function load()
 			window.mozRequestAnimationFrame ||
 			function(callback) { window.setTimeout(callback, 1000/60) };
 	stopAnimating = false;
-	keysDown = [];
+    keysDown = [];
+    start = Date.now();
+    lastTick = start;
 	animate(step);
 }
 
 var step = function(){
 	if(!stopAnimating) {
 		stateMachine.update();
-		stateMachine.render();
+        stateMachine.render();
+        let currentTick = Date.now();
+        deltaTime = currentTick - lastTick;
+        lastTick = currentTick;
 		animate(step);
 	}
 }
