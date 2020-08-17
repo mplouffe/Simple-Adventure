@@ -19,7 +19,6 @@ function Player(score, health, mana, name){
 	this.playerKeys = [];
 	this.playerLocation = [];
     this.playerBattler = new Battler(50, 50, 10, 10, 10, 10, 10, "Steve");
-    this.moved = false;
     this.stepped = false;
     this.steppingTime = 0.0;
     this.stepInterval = 2.0;
@@ -27,12 +26,6 @@ function Player(score, health, mana, name){
 
 Player.prototype.update = function()
 {
-    this.moved = false;
-
-    if (this.stepped = true) {
-        this.steppinTime = 0.0;
-        this.stepped = false;
-    }
     this.stepped = false;
 	for(var key in keysDown){
 		var value = Number(key);
@@ -40,32 +33,24 @@ Player.prototype.update = function()
 			// left arrow
 			this.Object.move(-2, 0);
             this.playerLocation[0] -= 2;
-            this.moved = true;
+            this.stepped = true;
 		} else if(value == 38 && this.movementArray[0]){
 			this.Object.move(0, -2);
             this.playerLocation[1] -= 2;
-            this.moved = true; 
+            this.stepped = true; 
 		}else if (value == 39 && this.movementArray[1]) {
 			// right arrow
 			this.Object.move(2, 0);
             this.playerLocation[0] += 2;
-            this.moved = true;
+            this.stepped = true;
 		}else if (value == 40 && this.movementArray[2]){
 			this.Object.move(0, 2);
             this.playerLocation[1] += 2;
-            this.moved = true;
+            this.stepped = true;
 		}
 		 else {
 			this.Object.move(0, 0);
 		}
-    }
-
-    if (this.moved)
-    {
-        this.steppingTime += deltaTime / 1000;
-        if (this.steppingTime >= this.stepInterval) {
-            this.stepped = true;
-        }
     }
 }
 

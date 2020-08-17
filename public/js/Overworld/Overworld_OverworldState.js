@@ -95,9 +95,9 @@ OverWorldState.prototype.update = function(){
 	this.player.Object.checkCollision(this.player, playerColliders);
     this.player.update();
     
-    if (this.player.stepped === true)
+    if (this.player.stepped)
     {
-        currentLevelRndEncounterEngine.addSteps(1);
+        currentLevelRndEncounterEngine.addSteps();
     }
 
 	if(this.loadNextLevel())

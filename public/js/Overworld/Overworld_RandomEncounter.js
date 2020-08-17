@@ -17,21 +17,23 @@
  {
  	this.roomMonsterList = [];
  	this.nextEncounter = resetRndEncounterCounter();
- 	this.currentActiveMonster;
+    this.currentActiveMonster;
+    this.steppingTime = 0.0;
+    this.nextEncounter = resetRndEncounterCounter();
  }
 
 /* Problem! this is being done each update instead of each 'step'
  */
-RndEncounterEngine.prototype.addSteps = function(steps)
+RndEncounterEngine.prototype.addSteps = function()
 {
 	if(this.roomMonsterList.length > 0)
 	{
-		this.nextEncounter -= steps;
-		if(this.nextEncounter <= 0)
-		{
+        this.steppingTime += deltaTime / 1000;
+        if (this.steppingTime >= this.nextEncounter) {
+            this.steppingTime = 0.0;
 			this.nextEncounter = resetRndEncounterCounter();
 			this.triggerRndEncounter();
-		}
+        }
 	}
 }
 
@@ -56,7 +58,7 @@ RndEncounterEngine.prototype.removeCurrentMonsterFromList = function()
 
 function resetRndEncounterCounter()
 {
-	let max = 5;
-	let min = 5;
+	let max = 2;
+	let min = 8;
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
