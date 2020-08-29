@@ -9,26 +9,31 @@
 * 0.1 - Initial implementation
 */
 
-function Grid(x, y, width, height, originX, originY) {
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
+function Grid(col, row, colWidth, rowHeight, originX, originY) {
+    this.col = col;
+    this.row = row;
+    this.width = colWidth;
+    this.height = rowHeight;
     this.originX = originX;
     this.originY = originY;
 }
 
 Grid.prototype.render = function()
 {
-    for (let x = 0; x <= this.width; x += 40) {
-        context.moveTo(0.5 + x + p, p);
-        context.lineTo(0.5 + x + p, bh + p);
+    let totalWidth = this.width * this.x;
+    let totalHeight = this.height * this.y;
+
+    context.beginPath();
+    for (let x = 0; x <= this.col; x++) {
+        context.moveTo(this.originX + (x * this.width), this.originY);
+        context.lineTo(this.originX + (x * this.width), this.originY + totalHeight);
     }
 
-    for (let y = 0; y <= this.height; y += 40) {
-        context.moveTo(p, 0.5 + y + p);
-        context.lineTo(bw + p, 0.5 + y + p);
+    for (let y = 0; y <= this.row; y++) {
+        context.moveTo(this.originX, this.originY + (y * this.height));
+        context.lineTo(this.originX + totalWidth, this.originY + (y * this.height));
     }
-    context.strokeStyle = "black";
+    context.closePath();
+
     context.stroke();
 }

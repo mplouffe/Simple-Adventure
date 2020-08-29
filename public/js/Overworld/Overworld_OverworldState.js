@@ -45,6 +45,8 @@ function OverWorldState(section, canvas, player){
 	this.width = 820;
 	this.height = 600;
 
+    this.grid = new Grid(2, 2, 10, 10, 1, 1);
+
 	// create the player
 	playerColliders = [];
 
@@ -115,7 +117,7 @@ OverWorldState.prototype.loadNextLevel = function(){
  * renders the new positions of all objects after the update
  */
 OverWorldState.prototype.render = function(){
-	
+
 	context.fillStyle = "#3CF";
 	context.fillRect(0, 0, this.width, this.height);
 
@@ -127,9 +129,14 @@ OverWorldState.prototype.render = function(){
 	}
 	for(var i = 0; i < currentLevelItems.length; i++){
 		currentLevelItems[i].render();
-	}
+    }
+    
+    context.moveTo(10, 20);
+    context.lineTo(50, 40);
 
-	this.player.render();
+    this.grid.render();
+    this.player.render();
+
 }
 
 OverWorldState.prototype.removeState = function()
