@@ -21,8 +21,6 @@ var currentLevelDoors;
 var currentLevelItems;
 var currentLevelRndEncounterEngine;
 
-var movementGrid;
-
 var fi;
 var dm;
 
@@ -34,7 +32,9 @@ var owWidth = 820;
 // timing
 var start;
 var lastTick;
-var deltaTime = 0;
+var deltaTime;
+
+var testGrid;
 
 function load()
 {
@@ -42,17 +42,7 @@ function load()
     gameWindow = document.createElement('section');
 	gameWindow.appendChild(canvas);
 	
-	directions = ['N', 'E', 'S', 'W'];
-	
 	document.getElementsByTagName('body')[0].appendChild(gameWindow);
-
-	levels_xml = loadXML("xml/levelData.xml");
-	levels = levels_xml.getElementsByTagName('level');
-    currentLevel = 0;
-    
-    movementGrid = new Grid(41, 30, 20, 20, 1, 1);
-	player = new Player(0, 10, 20, "Dude!!!", movementGrid);
-	stateMachine = new StateStack(new OverWorldState(gameWindow, canvas, player));
 
 	/* FOR TESTING PURPOSES */
 	animate = window.requestAnimationFrame ||
@@ -63,18 +53,28 @@ function load()
     keysDown = [];
     start = Date.now();
     lastTick = start;
-	animate(step);
+    testGrid = new Grid(2, 2, 10, 10, 1, 1);
+    context = canvas.getContext('2d');
+    animate(step);
 }
 
 var step = function(){
 	if(!stopAnimating) {
-		stateMachine.update();
-        stateMachine.render();
+		update();
+        render();
         let currentTick = Date.now();
         deltaTime = currentTick - lastTick;
         lastTick = currentTick;
 		animate(step);
 	}
+}
+
+var update = function() {
+
+}
+
+var render = function() {
+    testGrid.render();
 }
 
 window.addEventListener("keydown", function(event){

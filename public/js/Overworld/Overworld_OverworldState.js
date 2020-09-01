@@ -45,8 +45,6 @@ function OverWorldState(section, canvas, player){
 	this.width = 820;
 	this.height = 600;
 
-    this.grid = new Grid(2, 2, 10, 10, 1, 1);
-
 	// create the player
 	playerColliders = [];
 
@@ -75,26 +73,26 @@ function OverWorldState(section, canvas, player){
 OverWorldState.prototype.update = function(){
 	if(!levelBuilt){
 		this.buildLevel(currentLevel);
-		if(this.player.Object.x < 0)
-		{
-			this.player.Object.x = this.width - 10;
-			this.player.Object.y = (this.height * 0.5) - 10;
-		} else if(this.player.Object.x > this.width)
-		{
-			this.player.Object.x = 10;
-			this.player.Object.y = (this.height * 0.5) - 10;
-		} else if(this.player.Object.y < 0)
-		{
-			this.player.Object.x = (this.width * 0.5) - 10;
-			this.player.Object.y = this.height - 10;
-		} else if(this.player.Object.y > this.height)
-		{
-			this.player.Object.x = (this.width * 0.5) - 10;
-			this.player.Object.y = 10;
-		}
+		// if(this.player.Object.x < 0)
+		// {
+		// 	this.player.Object.x = this.width - 10;
+		// 	this.player.Object.y = (this.height * 0.5) - 10;
+		// } else if(this.player.Object.x > this.width)
+		// {
+		// 	this.player.Object.x = 10;
+		// 	this.player.Object.y = (this.height * 0.5) - 10;
+		// } else if(this.player.Object.y < 0)
+		// {
+		// 	this.player.Object.x = (this.width * 0.5) - 10;
+		// 	this.player.Object.y = this.height - 10;
+		// } else if(this.player.Object.y > this.height)
+		// {
+		// 	this.player.Object.x = (this.width * 0.5) - 10;
+		// 	this.player.Object.y = 10;
+		// }
 		levelBuilt = true;
 	}
-	this.player.Object.checkCollision(this.player, playerColliders);
+	this.player.playerObject.checkCollision(this.player, playerColliders);
     this.player.update();
     
     if (this.player.stepped)
@@ -110,7 +108,8 @@ OverWorldState.prototype.update = function(){
 }
 
 OverWorldState.prototype.loadNextLevel = function(){
-	return this.player.Object.x + this.player.Object.width < 0 || this.player.Object.x > owWidth || this.player.Object.y + this.player.Object.height < 0 || this.player.Object.y > owHeight;
+	//return this.player.Object.x + this.player.Object.width < 0 || this.player.Object.x > owWidth || this.player.Object.y + this.player.Object.height < 0 || this.player.Object.y > owHeight;
+    return false;
 }
 
 /* render
@@ -130,13 +129,8 @@ OverWorldState.prototype.render = function(){
 	for(var i = 0; i < currentLevelItems.length; i++){
 		currentLevelItems[i].render();
     }
-    
-    context.moveTo(10, 20);
-    context.lineTo(50, 40);
 
-    this.grid.render();
     this.player.render();
-
 }
 
 OverWorldState.prototype.removeState = function()

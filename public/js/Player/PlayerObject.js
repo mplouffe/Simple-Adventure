@@ -1,34 +1,34 @@
-/* Collision Detection System
- * A simple collision detection system using AABB
+/* Player Object
+ * A simple grid based movement object for players
  * Version: 0.1
- * Date Created: 06.28.2016
- * Last Updated: 07.01.2016
+ * Date Created: 08.31.2020
+ * Last Updated: 08.31.2020
  * Author: Matheu Plouffe
- * Special thanks: Andrew Roncin, Roberto 
  */
 
-function Object(x, y, width, height, color){
+function PlayerObject(x, y, width, height, color, movementGrid){
 	this.x = x;
 	this.y = y;
 	this.width = width;
 	this.height = height;
     this.color = color;
+    this.movementGrid = movementGrid;
 }
 
-Object.prototype.render = function()
+PlayerObject.prototype.render = function()
 {
 	context.fillStyle = this.color;
-	context.fillRect(this.x, this.y, this.width, this.height);
+	context.fillRect(this.movementGrid.getXPos(this.x), this.movementGrid.getYPos(this.y), this.width, this.height);
 }
 
-Object.prototype.move = function(x, y)
+PlayerObject.prototype.move = function(x, y)
 {
 	this.x += x;
 	this.y += y;
 }
 
 // COLLISION DETECTION SYSTEM
-Object.prototype.checkCollision = function(selfObject, otherObjects){
+PlayerObject.prototype.checkCollision = function(selfObject, otherObjects){
 
 	for(let i = 0; i < 4; i++)
 	{
@@ -38,11 +38,13 @@ Object.prototype.checkCollision = function(selfObject, otherObjects){
 	for(let i = 0; i < otherObjects.length; i++)
 	{
 		let other = otherObjects[i].Object;
-		
-		if(this.x < other.x + other.width + 2 &&
-			this.x + this.width + 2 > other.x &&
-			this.y < other.y + other.height + 2 &&
-			this.y + this.height + 2 > other.y)
+        let realXPos = this.movementGrid.getXPos(this.x);
+        let realYPos = this.movementGrid.getYPos(this.y);
+
+		if( realXPos < other.x + other.width + 2 &&
+			realXPos + this.width + 2 > other.x &&
+			realYPos < other.y + other.height + 2 &&
+			realYPos + this.height + 2 > other.y)
 		{
 			let colliderTag = otherObjects[i].tag;
 

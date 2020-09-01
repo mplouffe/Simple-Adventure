@@ -20,10 +20,12 @@ function Grid(col, row, colWidth, rowHeight, originX, originY) {
 
 Grid.prototype.render = function()
 {
-    let totalWidth = this.width * this.x;
-    let totalHeight = this.height * this.y;
+    let totalWidth = this.width * this.col;
+    let totalHeight = this.height * this.row;
 
+    context.strokeStyle = "#000000";
     context.beginPath();
+
     for (let x = 0; x <= this.col; x++) {
         context.moveTo(this.originX + (x * this.width), this.originY);
         context.lineTo(this.originX + (x * this.width), this.originY + totalHeight);
@@ -33,7 +35,19 @@ Grid.prototype.render = function()
         context.moveTo(this.originX, this.originY + (y * this.height));
         context.lineTo(this.originX + totalWidth, this.originY + (y * this.height));
     }
-    context.closePath();
-
     context.stroke();
+}
+
+Grid.prototype.getXPos = function(xPos) {
+    if (xPos > this.col || xPos < 0) {
+        return -1;
+    }
+    return xPos * this.width;
+}
+
+Grid.prototype.getYPos = function(yPos) {
+    if (yPos > this.row || yPos < 0) {
+        return -1;
+    }
+    return yPos * this.height;
 }
