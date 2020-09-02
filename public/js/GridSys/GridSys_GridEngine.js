@@ -16,13 +16,12 @@ var stateMachine;
 var canvas;
 var gameWindow;
 var player;
-var levels_xml;
-var levels;
+var level;
 var levelNumber;
 var context;
 
 // current level info
-var currentLevel;
+var currentRoom;
 var currentLevelWalls;
 var currentLevelDoors;
 var currentLevelItems;
@@ -53,10 +52,8 @@ function load()
 	
 	document.getElementsByTagName('body')[0].appendChild(gameWindow);
 
-    // TODO: switch this to json parsing
-	levels_xml = loadJSON("json/levelData.json");
-	levels = levels_xml.getElementsByTagName('level');
-    currentLevel = 0;
+    level = loadJSON("json/levelData.json");
+    currentRoom = 0;
     
     movementGrid = new Grid(41, 30, 20, 20, 1, 1);
 	player = new Player(0, 10, 20, "Dude!!!", movementGrid);

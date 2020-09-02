@@ -1,4 +1,4 @@
-{
+var levelData = {
     "level": {
         "rooms": [
             {

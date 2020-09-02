@@ -68,8 +68,10 @@ function load()
 
 var step = function(){
 	if(!stopAnimating) {
+
 		stateMachine.update();
         stateMachine.render();
+        movementGrid.render();
         let currentTick = Date.now();
         deltaTime = currentTick - lastTick;
         lastTick = currentTick;
