@@ -9,85 +9,30 @@
  * 0.1 - Initial implementation
 */
 
-var keysDown;
-var animate;
-var stopAnimating;
-var stateMachine;
-var canvas;
-var gameWindow;
-var player;
-var level;
-var levelNumber;
-var context;
-
-// current level info
-var currentRoom;
-var currentLevelWalls;
-var currentLevelDoors;
-var currentLevelItems;
-var currentLevelRndEncounterEngine;
-
-var movementGrid;
-
-var fi;
-var dm;
-
-var directions;
-
-var owHeight = 600;
-var owWidth = 820;
-
-// timing
-var start;
-var lastTick;
-var deltaTime = 0;
-
-function load()
+function GameEngine()
 {
-	canvas = document.createElement('canvas');
-    gameWindow = document.createElement('section');
-	gameWindow.appendChild(canvas);
-	
-	directions = ['N', 'E', 'S', 'W'];
-	
-	document.getElementsByTagName('body')[0].appendChild(gameWindow);
+    this.gfxEngine = new GGfxEngine();
+    this.inputEngine = new InputEngine();
+    this.inputEngine.keyDown = [];
+	this.player = new Player(0, 10, 20, "Dude!!!");
+    this.stateMachine = new StateStack(new OverWorldState(this.gfxEngine, this.inputEngine, this.player));
 
-    level = loadJSON("json/levelData.json");
-    currentRoom = 0;
-    
-    movementGrid = new Grid(41, 30, 20, 20, 1, 1);
-	player = new Player(0, 10, 20, "Dude!!!", movementGrid);
-	stateMachine = new StateStack(new OverWorldState(gameWindow, canvas, player));
-
-	/* FOR TESTING PURPOSES */
-	animate = window.requestAnimationFrame ||
+	this.animate = window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame ||
 			window.mozRequestAnimationFrame ||
 			function(callback) { window.setTimeout(callback, 1000/60) };
-	stopAnimating = false;
-    keysDown = [];
-    start = Date.now();
-    lastTick = start;
-	animate(step);
+	this.stopAnimating = false;
+    this.start = Date.now();
+    this.lastTick = start;
 }
 
-var step = function(){
-	if(!stopAnimating) {
-		stateMachine.update();
-        stateMachine.render();
+GameEngine.prototype.step = function(){
+	if(!this.stopAnimating) {
+		this.stateMachine.update();
+        this.stateMachine.render();
         let currentTick = Date.now();
-        deltaTime = currentTick - lastTick;
-        lastTick = currentTick;
-		animate(step);
+        this.deltaTime = currentTick - this.lastTick;
+        this.lastTick = currentTick;
+		this.animate(this.step);
 	}
 }
-
-window.addEventListener("keydown", function(event){
-	keysDown[event.keyCode] = true;
-});
-
-window.addEventListener("keyup", function(event){
-	delete keysDown[event.keyCode];
-});
-
-document.addEventListener("DOMContentLoaded", load, false);

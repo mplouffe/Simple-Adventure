@@ -32,43 +32,47 @@ var levelRndEncounterFactor;
  * - creates the canvas, sets up the animate, and starts the game loop
  */
 
-function OverWorldState(canvas, player){
+function OverWorldState(gfxEngine, inputEngine, player){
+    this.gfxRef = gfxEngine;
+    this.inputRef = inputEngine;
+    this.player = player;
+
+    this.directions = ['N', 'E', 'S', 'W'];
+	
+    this.level = loadJSON("json/levelData.json");
+    this.currentRoom = 0;
+    this.nextRoom = 0;
+
+    // TODO: change these hardcoded values to read from the level
+    // (will allow for changeable room sizes)
+	this.gfxRef.canvas.width = 820;
+    this.gfxRef.canvas.height = 600;
+    this.movementGrid = new Grid(41, 30, 20, 20, 1, 1);
+    this.player.setMovementGrid(this.movementGrid);
+
 	// initialize some variables
     this.stateName = "overworld";
     this.needsRefresh = true;
-	roomBuilt = false;
-	currentRoomGrid = [[]];
-	keysDown = [];
-	this.player = player;
-
-	this.width = 820;
-	this.height = 600;
+	this.roomBuilt = false;
+	this.currentRoomGrid = [[]];
+	this.inputRef.keysDown = [];
 
 	// create the UI
-	ui = document.createElement('p');
-	
-	ui.setAttribute('class', 'textAdventureUI');
-	ui.setAttribute('id', 'overworldUI');
-	ui.innerHTML = 'Health: ' + player.playerBattler.hitPoints +
+	this.gfxRef.ui.setAttribute('class', 'textAdventureUI');
+	this.gfxRef.ui.setAttribute('id', 'overworldUI');
+	this.gfxRef.ui.innerHTML = 'Health: ' + player.playerBattler.hitPoints +
 			' Mana: ' + player.playerBattler.magicPoints +
 			' Score: ' + player.score;
+    
 
-	this.canvas = canvas;
-	this.canvas.width = owWidth;
-	this.canvas.height = owHeight;
-	// set the context
-	context = this.canvas.getContext('2d');
-
-	// attach the canvas to the window
-	gameWindow.appendChild(ui);
 }
 
 /* update
  * calls update on all the game elements
  */
 OverWorldState.prototype.update = function(){
-	if(!roomBuilt){
-		this.buildRoom(currentRoom);
+	if(!this.roomBuilt){
+		this.buildRoom(this.currentRoom);
 		// if(this.player.Object.x < 0)
 		// {
 		// 	this.player.Object.x = this.width - 10;
@@ -86,20 +90,20 @@ OverWorldState.prototype.update = function(){
 		// 	this.player.Object.x = (this.width * 0.5) - 10;
 		// 	this.player.Object.y = 10;
 		// }
-		RoomBuilt = true;
+		this.roomBuilt = true;
 	}
 	this.player.playerObject.checkCollision(this.player, playerColliders);
-    this.player.update();
+    this.player.update(this.inputRef);
     
     if (this.player.stepped)
     {
-        currentLevelRndEncounterEngine.addSteps();
+        this.currentLevelRndEncounterEngine.addSteps();
     }
 
 	if(this.loadNextLevel())
 	{
-		roomBuilt = false;
-		currentRoom = nextRoom;
+		this.roomBuilt = false;
+		this.currentRoom = this.nextRoom;
 	}
 }
 
@@ -146,8 +150,8 @@ OverWorldState.prototype.buildLevel = function(levelNumber){
 	
 	currentLevelWalls = [];
 	currentLevelDoors = [];
-	currentLevelItems = [];
-	playerColliders = [];
+    currentLevelItems = [];
+    
 
 	// get an array of walls from the XML
 	let walls = levels[levelNumber].getElementsByTagName('wall');
@@ -204,7 +208,7 @@ OverWorldState.prototype.buildLevel = function(levelNumber){
 	}
 
 	// build the rndEncounterEngine
-	currentLevelRndEncounterEngine = new RndEncounterEngine();
+	this.currentLevelRndEncounterEngine = new RndEncounterEngine();
 	let monsters = levels[levelNumber].getElementsByTagName('monsters');
 	for(let i = 0; i < monsters.length; i++)
 	{
@@ -213,25 +217,25 @@ OverWorldState.prototype.buildLevel = function(levelNumber){
 		let monsterstrength = monsters[i].getElementsByTagName('monsterstrength')[0].firstChild.nodeValue;
 
 		let newMonster = new Battler(monsterhp, 0, monsterstrength, 0, 0, 0, 7, monsterName);
-		currentLevelRndEncounterEngine.addMonsterToList(newMonster);
+		this.currentLevelRndEncounterEngine.addMonsterToList(newMonster);
 	}
-
 }
 
 OverWorldState.prototype.refresh = function()
 {
-	ui = document.createElement('p');
+    if (typeof this.gfxRef.ui === 'undefined')
+    {
+        this.gfxRef.ui = document.createElement('p');
+    }
 	
-	ui.setAttribute('class', 'textAdventureUI');
-	ui.innerHTML = 'Health: ' + player.playerBattler.hitPoints +
-			' Mana: ' + player.playerBattler.magicPoints +
-			' Score: ' + player.score;
+	this.gfxRef.ui.setAttribute('class', 'textAdventureUI');
+	this.gfxRef.ui.innerHTML = 'Health: ' + this.player.playerBattler.hitPoints +
+			' Mana: ' + this.player.playerBattler.magicPoints +
+			' Score: ' + this.player.score;
 
-	this.canvas.setAttribute('class', 'overWorldWindow');
-	this.canvas.width = owWidth;
-	this.canvas.height = owHeight;
-	// set the context
-	context = this.canvas.getContext('2d');
-	gameWindow.appendChild(ui);
-	gameWindow.setAttribute('class', 'overWorldSection')
+	this.gfxRef.canvas.setAttribute('class', 'overWorldWindow');
+	this.gfxRef.canvas.width = owWidth;
+	this.gfxRef.canvas.height = owHeight;
+	this.gfxRef.gameWindow.appendChild(ui);
+	this.gfxRef.gameWindow.setAttribute('class', 'overWorldSection')
 }

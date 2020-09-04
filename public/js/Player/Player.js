@@ -24,11 +24,11 @@ function Player(score, health, mana, name, movementGrid){
     this.lastStep = 0.0;
 }
 
-Player.prototype.update = function()
+Player.prototype.update = function(inputEngine)
 {
     this.stepped = false;
     if (this.lastStep > this.stepInterval) {
-        for(var key in keysDown){
+        for(var key in inputEngine.keysDown){
             var value = Number(key);
             if(value == 37 && this.movementArray[3]){
                 // left arrow

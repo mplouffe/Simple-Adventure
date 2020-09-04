@@ -15,6 +15,10 @@ function PlayerObject(x, y, width, height, color, movementGrid){
     this.movementGrid = movementGrid;
 }
 
+PlayerObject.prototype.setMovementGrid = function(movementGrid){
+    this.movementGrid = movementGrid;
+}
+
 PlayerObject.prototype.render = function()
 {
 	context.fillStyle = this.color;
