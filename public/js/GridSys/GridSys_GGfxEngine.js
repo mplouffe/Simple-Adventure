@@ -13,6 +13,7 @@
 function GGfxEngine()
 {
     this.canvas = document.createElement('canvas');
+    this.canvas.setAttribute('id', 'gameCanvas');
     this.gameWindow = document.createElement('section');
     this.ui = document.createElement('p');
 

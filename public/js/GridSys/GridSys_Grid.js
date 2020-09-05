@@ -16,6 +16,9 @@ function Grid(col, row, colWidth, rowHeight, originX, originY) {
     this.height = rowHeight;
     this.originX = originX;
     this.originY = originY;
+
+    let canvas = document.getElementById('gameCanvas');
+    this.context = canvas.getContext('2d');
 }
 
 Grid.prototype.render = function()
@@ -23,19 +26,19 @@ Grid.prototype.render = function()
     let totalWidth = this.width * this.col;
     let totalHeight = this.height * this.row;
 
-    context.strokeStyle = "#000000";
-    context.beginPath();
+    this.context.strokeStyle = "#000000";
+    this.context.beginPath();
 
     for (let x = 0; x <= this.col; x++) {
-        context.moveTo(this.originX + (x * this.width), this.originY);
-        context.lineTo(this.originX + (x * this.width), this.originY + totalHeight);
+        this.context.moveTo(this.originX + (x * this.width), this.originY);
+        this.context.lineTo(this.originX + (x * this.width), this.originY + totalHeight);
     }
 
     for (let y = 0; y <= this.row; y++) {
-        context.moveTo(this.originX, this.originY + (y * this.height));
-        context.lineTo(this.originX + totalWidth, this.originY + (y * this.height));
+        this.context.moveTo(this.originX, this.originY + (y * this.height));
+        this.context.lineTo(this.originX + totalWidth, this.originY + (y * this.height));
     }
-    context.stroke();
+    this.context.stroke();
 }
 
 Grid.prototype.getXPos = function(xPos) {
