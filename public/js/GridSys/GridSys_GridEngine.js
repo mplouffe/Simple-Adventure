@@ -9,30 +9,26 @@
  * 0.1 - Initial implementation
 */
 
-function GameEngine()
-{
-    this.gfxEngine = new GGfxEngine();
-    this.inputEngine = new InputEngine();
-    this.inputEngine.keyDown = [];
-	this.player = new Player(0, 10, 20, "Dude!!!");
-    this.stateMachine = new StateStack(new OverWorldState(this.gfxEngine, this.inputEngine, this.player));
+// TODO: Not these big dirty global vars :p
 
-	this.animate = window.requestAnimationFrame ||
-			window.webkitRequestAnimationFrame ||
-			window.mozRequestAnimationFrame ||
-			function(callback) { window.setTimeout(callback, 1000/60) };
-	this.stopAnimating = false;
-    this.start = Date.now();
-    this.lastTick = this.start;
-}
+class GameEngine {
+    constructor() {
+        this.gfxEngine = new GGfxEngine();
+        this.inputEngine = new InputEngine();
+        this.player = new Player(0, 10, 20, "Dude!!!");
+        this.stateMachine = new StateStack(new OverWorldState(this.gfxEngine, this.inputEngine, this.player));
+        this.stopAnimating = false;
+        this.start = Date.now();
+        this.lastTick = this.start;
+    }
 
-GameEngine.prototype.step = function(){
-	if(!this.stopAnimating) {
-		this.stateMachine.update();
-        this.stateMachine.render();
-        let currentTick = Date.now();
-        this.deltaTime = currentTick - this.lastTick;
-        this.lastTick = currentTick;
-		this.animate(this.step);
-	}
+    step() {
+        if(!this.stopAnimating) {
+            this.stateMachine.update();
+            this.stateMachine.render();
+            let currentTick = Date.now();
+            deltaTime = currentTick - this.lastTick;
+            this.lastTick = currentTick;
+        }
+    }
 }

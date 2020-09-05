@@ -1,12 +1,18 @@
 
-function InputEngine()
+class InputEngine 
 {
-    this.keysDown = [];
-    window.addEventListener("keydown", function(event){
+    constructor()
+    {
+        this.keysDown = {};
+    }
+
+    onKeyDownEvent(event)
+    {
         this.keysDown[event.keyCode] = true;
-    });
-    
-    window.addEventListener("keyup", function(event){
+    }
+
+    onKeyUpEvent(event)
+    {
         delete this.keysDown[event.keyCode];
-    });
+    }
 }

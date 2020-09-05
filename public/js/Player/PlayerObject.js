@@ -7,8 +7,7 @@
  */
 
 function PlayerObject(x, y, width, height, color){
-	this.x = x;
-	this.y = y;
+	this.location = { x: x, y:y };
 	this.width = width;
 	this.height = height;
     this.color = color;
@@ -16,6 +15,6 @@ function PlayerObject(x, y, width, height, color){
 
 PlayerObject.prototype.move = function(x, y)
 {
-	this.x += x;
-	this.y += y;
+	this.location.x += x;
+	this.location.y += y;
 }

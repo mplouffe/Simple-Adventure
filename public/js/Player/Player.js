@@ -10,17 +10,17 @@
  * 0.2 - Changing over to the grid based system
  */
 
-function Player(score, health, mana, name, movementGrid){
+function Player(score, health, mana, name, worldGrid){
 	this.score = score;
 	this.health = health;
 	this.mana = mana;
     this.name = name;
-    this.movementGrid = movementGrid;
+    this.worldGrid = worldGrid;
 	this.playerLocation = [10, 10];
 	this.playerObject = new PlayerObject(this.playerLocation[0], this.playerLocation[1], 20, 20, "#FFF");
 	this.tag = 'player';
-	this.itemArray = [];
-	this.playerKeys = [];
+	this.items = {};
+	this.playerKeys = {};
     this.playerBattler = new Battler(50, 50, 10, 10, 10, 10, 10, this.name);
     this.stepped = false;
     this.stepInterval = 100;
@@ -31,33 +31,38 @@ Player.prototype.update = function(inputEngine)
 {
     this.stepped = false;
     if (this.lastStep > this.stepInterval) {
+        let playerMove = { x: 0, y: 0 };
         for(let key in inputEngine.keysDown){
             let value = Number(key);
-            if(value == 37 && this.movementArray[3]){
-                // left arrow
-                this.playerObject.move(-1, 0);
-                this.playerLocation[0] -= 1;
-                this.stepped = true;
-                this.lastStep = 0.0;
-            } else if(value == 38 && this.movementArray[0]){
-                this.playerObject.move(0, -1);
-                this.playerLocation[1] -= 1;
-                this.stepped = true;
-                this.lastStep = 0.0;
-            }else if (value == 39 && this.movementArray[1]) {
-                // right arrow
-                this.playerObject.move(1, 0);
-                this.playerLocation[0] += 1;
-                this.stepped = true;
-                this.lastStep = 0.0;
-            }else if (value == 40 && this.movementArray[2]){
-                this.playerObject.move(0, 1);
-                this.playerLocation[1] += 1;
+            switch (value)
+            {
+                case 37:
+                    playerMove.x -= 1;
+                    break;
+                case 38:
+                    playerMove.y -= 1;
+                    break;
+                case 39:
+                    playerMove.x += 1;
+                    break;
+                case 40:
+                    playerMove.y += 1;
+                    break;
+            }
+        }
+
+        if (playerMove.x != 0 || playerMove.y != 0)
+        {
+            let collisions = this.movementGrid.checkForCollisions(this.playerObject.location, playerMove);
+            if (collisions.length == 0)
+            {
+                this.playerObject.move(playerMove.x, playerMove.y);
                 this.stepped = true;
                 this.lastStep = 0.0;
             }
-             else {
-                this.playerObject.move(0, 0);
+            else
+            {
+                // TODO: Handle collisions!
             }
         }
     }
@@ -68,8 +73,8 @@ Player.prototype.render = function(context)
 {
     context.fillStyle = this.playerObject.color;
 	context.fillRect(
-        this.movementGrid.getXPos(this.playerObject.x),
-        this.movementGrid.getYPos(this.playerObject.y),
+        this.movementGrid.getXPos(this.playerObject.location.x),
+        this.movementGrid.getYPos(this.playerObject.location.y),
         this.playerObject.width,
         this.playerObject.height
     );

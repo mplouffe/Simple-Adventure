@@ -9,10 +9,33 @@
  * 0.1 - Initial implementation
 */
 
+var deltaTime = 0.0;
+var animate;
+var gameEngine;
+
 function load()
 {
-    var gameEngine = new GameEngine();
-	gameEngine.step();
+    window.requestAnimationFrame = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        function(callback) { window.setTimeout(callback, 1000/60) };
+    gameEngine = new GameEngine();
+
+    window.addEventListener("keydown", function(event) {
+        gameEngine.inputEngine.onKeyDownEvent(event);
+    });
+    
+    window.addEventListener("keyup", function(event) {
+        gameEngine.inputEngine.onKeyUpEvent(event);
+    });
+	step();
+}
+
+var step = function() {
+    if(!gameEngine.stopAnimating) {
+        gameEngine.step();
+        window.requestAnimationFrame(step);
+    }
 }
 
 document.addEventListener("DOMContentLoaded", load, false);

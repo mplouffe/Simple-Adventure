@@ -56,7 +56,6 @@ function OverWorldState(gfxEngine, inputEngine, player){
     this.needsRefresh = true;
 	this.roomBuilt = false;
 	this.currentRoomGrid = [[]];
-	this.inputRef.keysDown = [];
 
 	// create the UI
 	this.gfxRef.ui.setAttribute('class', 'textAdventureUI');
@@ -93,12 +92,11 @@ OverWorldState.prototype.update = function(){
 		// }
 		this.roomBuilt = true;
 	}
-	this.playerRef.playerObject.checkCollision(this.playerRef, playerColliders);
     this.playerRef.update(this.inputRef);
     
     if (this.playerRef.stepped)
     {
-        this.currentLevelRndEncounterEngine.addSteps();
+        // this.currentLevelRndEncounterEngine.addSteps();
     }
 
 	if(this.loadNextLevel())

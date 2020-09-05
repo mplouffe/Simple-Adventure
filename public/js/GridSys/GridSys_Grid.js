@@ -54,3 +54,9 @@ Grid.prototype.getYPos = function(yPos) {
     }
     return yPos * this.height;
 }
+
+Grid.prototype.checkForCollisions = function(origin, destination) {
+    return [];
+    // check for and return an array of all objects collided with along a raycast
+    // from the origin to the destination (inclusive)
+}
