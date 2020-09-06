@@ -10,12 +10,12 @@
  * 0.2 - Changing over to the grid based system
  */
 
-function Player(score, health, mana, name, worldGrid){
+function Player(score, health, mana, name, movementGrid){
 	this.score = score;
 	this.health = health;
 	this.mana = mana;
     this.name = name;
-    this.worldGrid = worldGrid;
+    this.movementGrid = movementGrid;
 	this.playerLocation = [10, 10];
 	this.playerObject = new PlayerObject(this.playerLocation[0], this.playerLocation[1], 20, 20, "#FFF");
 	this.tag = 'player';

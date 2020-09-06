@@ -6,15 +6,18 @@
  * Author: Matheu Plouffe
  */
 
-function PlayerObject(x, y, width, height, color){
-	this.location = { x: x, y:y };
-	this.width = width;
-	this.height = height;
-    this.color = color;
-}
-
-PlayerObject.prototype.move = function(x, y)
+class PlayerObject
 {
-	this.location.x += x;
-	this.location.y += y;
+    constructor(x, y, width, height, color){
+        this.location = { x: x, y:y };
+        this.width = width;
+        this.height = height;
+        this.color = color;
+    }
+
+    move(x, y)
+    {
+        this.location.x += x;
+        this.location.y += y;
+    }
 }
