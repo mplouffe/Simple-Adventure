@@ -22,6 +22,8 @@ class OverWorldState {
         this.inputRef = inputEngine;
         this.playerRef = player;
 
+        this.dynamicBodies = [ player ];
+
         this.directions = ['N', 'E', 'S', 'W'];
         
         this.level = loadJSON("json/levelData.json");
@@ -32,9 +34,9 @@ class OverWorldState {
         // (will allow for changeable room sizes)
         this.gfxRef.canvas.width = 820;
         this.gfxRef.canvas.height = 600;
-        this.movementGrid = new Grid(41, 30, 20, 20, 1, 1);
 
-        this.playerRef.setMovementGrid(this.movementGrid);
+        this.roomGrid = new Grid(41, 30, 20, 20, 1, 1);
+        this.movementGrid = new MovementGrid(this.roomGrid);
 
         // initialize some variables
         this.stateName = "overworld";
@@ -47,8 +49,6 @@ class OverWorldState {
         this.gfxRef.ui.innerHTML = 'Health: ' + this.playerRef.playerBattler.hitPoints +
                 ' Mana: ' + this.playerRef.playerBattler.magicPoints +
                 ' Score: ' + this.playerRef.score;
-        
-
     }
 
     /* update
@@ -57,30 +57,20 @@ class OverWorldState {
     update() {
         if(!this.roomBuilt){
             this.buildRoom(this.currentRoom);
-            // if(this.player.Object.x < 0)
-            // {
-            // 	this.player.Object.x = this.width - 10;
-            // 	this.player.Object.y = (this.height * 0.5) - 10;
-            // } else if(this.player.Object.x > this.width)
-            // {
-            // 	this.player.Object.x = 10;
-            // 	this.player.Object.y = (this.height * 0.5) - 10;
-            // } else if(this.player.Object.y < 0)
-            // {
-            // 	this.player.Object.x = (this.width * 0.5) - 10;
-            // 	this.player.Object.y = this.height - 10;
-            // } else if(this.player.Object.y > this.height)
-            // {
-            // 	this.player.Object.x = (this.width * 0.5) - 10;
-            // 	this.player.Object.y = 10;
-            // }
             this.roomBuilt = true;
         }
-        this.playerRef.update(this.inputRef);
-        
+
+        // MOVEMENT SYSTEM
+        let allMoves = [];
+        for(let i = 0; i < this.dynamicBodies.Length; i++)
+        {
+            allMoves[i] = this.dynamicBodies.getMoveUpdate();
+        }
+        this.movementGrid.ResolveMoves(allMoves);
+
         if (this.playerRef.stepped)
         {
-            // this.currentLevelRndEncounterEngine.addSteps();
+            this.currentLevelRndEncounterEngine.addSteps(this.playerRef.stepsTaken);
         }
 
         if(this.loadNextLevel())
@@ -91,7 +81,6 @@ class OverWorldState {
     }
 
     loadNextLevel(){
-        //return this.player.Object.x + this.player.Object.width < 0 || this.player.Object.x > owWidth || this.player.Object.y + this.player.Object.height < 0 || this.player.Object.y > owHeight;
         return false;
     }
 
@@ -104,7 +93,6 @@ class OverWorldState {
         this.gfxRef.context.fillRect(0, 0, this.gfxRef.canvas.width, this.gfxRef.canvas.height);
 
         // render elements of world
-        this.
         this.playerRef.render(this.gfxRef.context);
     }
 
