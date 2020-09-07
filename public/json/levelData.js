@@ -23,7 +23,7 @@ var levelData = {
                         "origins": [
                             {
                                 "x": 0,
-                                "y": 30
+                                "y": 29
                             }
                         ]
                     },

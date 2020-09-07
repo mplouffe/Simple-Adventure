@@ -15,8 +15,8 @@ class GameEngine {
     constructor() {
         this.gfxEngine = new GGfxEngine();
         this.inputEngine = new InputEngine();
-        this.player = new Player(0, 10, 20, "Dude!!!");
-        this.stateMachine = new StateStack(new OverWorldState(this.gfxEngine, this.inputEngine, this.player));
+        this.player = new Player(0, 10, 20, "Dude!!!", this.inputEngine);
+        this.stateMachine = new StateStack(new OverWorldState(this.gfxEngine, this.player));
         this.stopAnimating = false;
         this.start = Date.now();
         this.lastTick = this.start;

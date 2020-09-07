@@ -10,94 +10,106 @@
  * 0.2 - Changing over to the grid based system
  */
 
-function Player(score, health, mana, name, movementGrid){
-	this.score = score;
-	this.health = health;
-	this.mana = mana;
-    this.name = name;
-    this.movementGrid = movementGrid;
-	this.playerLocation = [10, 10];
-	this.playerObject = new PlayerObject(this.playerLocation[0], this.playerLocation[1], 20, 20, "#FFF");
-	this.tag = 'player';
-	this.items = {};
-	this.playerKeys = {};
-    this.playerBattler = new Battler(50, 50, 10, 10, 10, 10, 10, this.name);
-    this.stepped = false;
-    this.stepInterval = 100;
-    this.lastStep = 0.0;
-}
+class Player {
+    constructor(score, health, mana, name, inputEngine){
+        this.score = score;
+        this.health = health;
+        this.mana = mana;
+        this.name = name;
+        this.gridTransform = new GridTransform(10, 10, 1, 1);
+        this.gridRenderer = new GridRenderer('#FFF');
+        this.inputEngine = inputEngine;
+        this.tag = 'player';
+        this.items = {};
+        this.playerKeys = {};
+        this.playerBattler = new Battler(50, 50, 10, 10, 10, 10, 10, this.name);
+        this.stepped = false;
+        this.stepInterval = 100;
+        this.lastStep = 0.0;
+        this.collider = 'P';
+    }
 
-Player.prototype.update = function(inputEngine)
-{
-    this.stepped = false;
-    if (this.lastStep > this.stepInterval) {
-        let playerMove = { x: 0, y: 0 };
-        for(let key in inputEngine.keysDown){
-            let value = Number(key);
-            switch (value)
-            {
-                case 37:
-                    playerMove.x -= 1;
-                    break;
-                case 38:
-                    playerMove.y -= 1;
-                    break;
-                case 39:
-                    playerMove.x += 1;
-                    break;
-                case 40:
-                    playerMove.y += 1;
-                    break;
+    getMove()
+    {
+        this.stepped = false;
+        this.stepsTaken = 0;
+        this.playerMove = { x: 0, y: 0 };
+
+        if (this.lastStep > this.stepInterval) {
+            for(let key in this.inputEngine.keysDown){
+                let value = Number(key);
+                switch (value)
+                {
+                    case 37:
+                        this.playerMove.x -= 1;
+                        break;
+                    case 38:
+                        this.playerMove.y -= 1;
+                        break;
+                    case 39:
+                        this.playerMove.x += 1;
+                        break;
+                    case 40:
+                        this.playerMove.y += 1;
+                        break;
+                }
             }
         }
+        this.lastStep += deltaTime;
 
-        if (playerMove.x != 0 || playerMove.y != 0)
+        if (this.playerMove.x == 0 && this.playerMove.y == 0)
         {
-            let collisions = this.movementGrid.checkForCollisions(this.playerObject.location, playerMove);
-            if (collisions.length == 0)
-            {
-                this.playerObject.move(playerMove.x, playerMove.y);
-                this.stepped = true;
-                this.lastStep = 0.0;
-            }
-            else
-            {
-                // TODO: Handle collisions!
-            }
+            return null;
+        }
+        else
+        {
+            return new Move(
+                this,
+                this.gridTransform.location,
+                {
+                    x: this.gridTransform.location.x + this.playerMove.x,
+                    y: this.gridTransform.location.y + this.playerMove.y
+                }
+            );
         }
     }
-    this.lastStep += deltaTime;
-}
 
-Player.prototype.render = function(context)
-{
-    context.fillStyle = this.playerObject.color;
-	context.fillRect(
-        this.movementGrid.getXPos(this.playerObject.location.x),
-        this.movementGrid.getYPos(this.playerObject.location.y),
-        this.playerObject.width,
-        this.playerObject.height
-    );
-}
+    resolveCollision(collider) {
+        console.log("Player collided with: " + collider);
+    }
 
-Player.prototype.setMovementGrid = function(movementGrid)
-{
-    this.movementGrid = movementGrid;
-}
+    resolveMove(moved) {
+        if (moved) {
+            this.stepped = true;
+            this.lastStep = 0;
+            this.stepsTaken = 1;
+            this.gridTransform.move(this.playerMove.x, this.playerMove.y);
+            return "";
+        } else {
+            console.log("Player tried to move, but couldn't...");
+            return this.collider;
+        }
+    }
 
-Player.prototype.addKeyToInventory = function(key)
-{
-	this.playerKeys.push(key);
-}
+    render()
+    {
+        
+    }
 
-Player.prototype.checkForKey = function(door)
-{
-	for(var i = 0; i < this.playerKeys.length; i++)
-	{
-		if(this.playerKeys[i].itemID == door.key)
-		{
-			return true;
-		}
-	}
-	return false;
+    addKeyToInventory(key)
+    {
+        this.playerKeys.push(key);
+    }
+
+    checkForKey(door)
+    {
+        for(var i = 0; i < this.playerKeys.length; i++)
+        {
+            if(this.playerKeys[i].itemID == door.key)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

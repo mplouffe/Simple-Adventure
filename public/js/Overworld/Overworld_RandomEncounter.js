@@ -1,64 +1,54 @@
 /* Random Encounter System
  * A random encounter system used for the Simple Adventure Game
- * Version: 0.1
+ * Version: 0.2
  * Date Created: 07.1.2016
- * Last Update: 07.01.2016
+ * Last Update: 09.07.2020
  * Author: Matheu Plouffe
+ * 
+ * History:
+ * 0.1 - Initial implementation (with improper stepping implementation)
+ * 0.2 - Changed over to grid based stepping implemenation in class
+ * 
  */
 
- /* RANDOM ENCOUNTER ENGINE
-  * Was supposed to be designed so that every min 8 max 32 steps
-  * BUT right now it increments by the rndEncounterFactor each UPDATE instead of each step
-  * even if the hero never moves, random encounters will trigger
-  * maybe not bad, but if so would probably have to change the update frequency to something
-  * more reasonable
-  */
- function RndEncounterEngine()
- {
- 	this.roomMonsterList = [];
- 	this.nextEncounter = resetRndEncounterCounter();
-    this.currentActiveMonster;
-    this.steppingTime = 0.0;
-    this.nextEncounter = resetRndEncounterCounter();
- }
-
-/* Problem! this is being done each update instead of each 'step'
- */
-RndEncounterEngine.prototype.addSteps = function()
+class RndEncounterEngine
 {
-	if(this.roomMonsterList.length > 0)
-	{
-        this.steppingTime += deltaTime / 1000;
-        if (this.steppingTime >= this.nextEncounter) {
-            this.steppingTime = 0.0;
-			this.nextEncounter = resetRndEncounterCounter();
-			this.triggerRndEncounter();
+    constructor(min, max) {
+        this.stepThresholds = { min: min, max: max };
+        this.roomMonsterList = [];
+        this.currentActiveMonster;
+        this.stepsSinceLastEncounter = 0;
+        this.nextEncounter = this.resetRndEncounterCounter();
+        this.triggerFight = false;
+        this.fightState = {};
+    }
+
+    addSteps(numberOfSteps) {
+        if (this.roomMonsterList.length > 0) {
+            this.stepsSinceLastEncounter += numberOfSteps;
+            if (this.stepsSinceLastEncounter >= this.nextEncounter) {
+                this.stepsSinceLastEncounter = 0;
+                this.nextEncounter = resetRndEncounterCounter();
+                this.triggerRndEncounter();
+            }
         }
-	}
-}
+    }
 
-RndEncounterEngine.prototype.triggerRndEncounter = function()
-{
-	let encounterMonster = Math.floor(Math.random() * this.roomMonsterList.length);
-	this.currentActiveMonster = encounterMonster;
-	stateMachine.pushState(new FightState(gameWindow, canvas, this.roomMonsterList[encounterMonster]));
-}
+    triggerRndEncounter() {
+        let randomMonsterIndex = Math.floor(Math.random() * this.roomMonsterList.length);
+        this.fightState.currentActiveMonsterIndex = randomMonsterIndex;
+        this.fightState.currentMonster = this.roomMonsterList[randomMonsterIndex];
+    }
 
-RndEncounterEngine.prototype.addMonsterToList = function(monsterToAdd)
-{
-	this.roomMonsterList.push(monsterToAdd);
-}
+    addMonsterToList(monsterToAdd) {
+        this.roomMonsterList.push(monsterToAdd);
+    }
 
-RndEncounterEngine.prototype.removeCurrentMonsterFromList = function()
-{
-	this.roomMonsterList.splice(this.currentActiveMonster, 1);
-	let monsterToRemove = levels[currentLevel].getElementsByTagName('monsters')[this.currentActiveMonster];
-	monsterToRemove.parentNode.removeChild(monsterToRemove);
-}
+    removeCurrentMonsterFromList() {
+        this.roomMonsterList.splice(this.fightState.currentActiveMonsterIndex, 1);
+    }
 
-function resetRndEncounterCounter()
-{
-	let max = 2;
-	let min = 8;
-	return Math.floor(Math.random() * (max - min + 1)) + min;
+    resetRndEncounterCounter() {
+        return Math.floor(Math.random() * (this.stepThresholds.max - this.stepThresholds.min + 1)) + this.stepThresholds.min;
+    }
 }

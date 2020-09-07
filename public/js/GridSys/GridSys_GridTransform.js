@@ -1,18 +1,17 @@
-/* Player Object
- * A simple grid based movement object for players
+/* Grid Transform
+ * A simple grid based transform for objects
  * Version: 0.1
  * Date Created: 08.31.2020
- * Last Updated: 09.04.2020
+ * Last Updated: 09.07.2020
  * Author: Matheu Plouffe
  */
 
-class PlayerObject
+class GridTransform
 {
     constructor(x, y, width, height, color){
         this.location = { x: x, y:y };
         this.width = width;
         this.height = height;
-        this.color = color;
     }
 
     move(x, y)
@@ -20,4 +19,8 @@ class PlayerObject
         this.location.x += x;
         this.location.y += y;
     }
+
+    // TODO: implement as needed
+    // - adjust width and height
+    // - scale along axis
 }
