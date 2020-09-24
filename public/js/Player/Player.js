@@ -18,6 +18,7 @@ class Player {
         this.name = name;
         this.gridTransform = new GridTransform(10, 10, 1, 1);
         this.gridRenderer = new GridRenderer('#FFF');
+        this.gridCollider = new PlayerCollider();
         this.inputEngine = inputEngine;
         this.tag = 'player';
         this.items = {};
@@ -64,7 +65,7 @@ class Player {
         else
         {
             return new Move(
-                this,
+                this.gridCollider,
                 this.gridTransform.location,
                 {
                     x: this.gridTransform.location.x + this.playerMove.x,
@@ -72,28 +73,6 @@ class Player {
                 }
             );
         }
-    }
-
-    resolveCollision(collider) {
-        console.log("Player collided with: " + collider);
-    }
-
-    resolveMove(moved) {
-        if (moved) {
-            this.stepped = true;
-            this.lastStep = 0;
-            this.stepsTaken = 1;
-            this.gridTransform.move(this.playerMove.x, this.playerMove.y);
-            return "";
-        } else {
-            console.log("Player tried to move, but couldn't...");
-            return this.collider;
-        }
-    }
-
-    render()
-    {
-        
     }
 
     addKeyToInventory(key)

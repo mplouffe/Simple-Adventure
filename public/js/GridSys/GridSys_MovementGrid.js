@@ -15,6 +15,7 @@ class Move
         this.dynamicObject = dynamicObject;
         this.origin = origin;
         this.target = target;
+        this.result = false;
     }
 }
 
@@ -78,7 +79,8 @@ class MovementGrid
                 currentMove.target.y < 0 || 
                 currentMove.target.y >= this.grid.row )
             {
-                currentMove.dynamicObject.resolveMove(false);
+                currentMove.result = false;
+                currentMove.dynamicObject.resolveMove(currentMove);
             }
             else
             {
@@ -89,8 +91,9 @@ class MovementGrid
                 }
                 else
                 {
+                    currentMove.result = true;
                     this.colliderMatrix[currentMove.target.x][currentMove.target.y] = currentMove.dynamicObject.collider;
-                    this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = currentMove.dynamicObject.resolveMove(true);
+                    this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = currentMove.dynamicObject.resolveMove(currentMove);
                 }
             }
         }

@@ -16,6 +16,8 @@ var gameEngine;
 
 function load()
 {
+    Enums.Initialize();
+
     window.requestAnimationFrame = window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
         window.mozRequestAnimationFrame ||

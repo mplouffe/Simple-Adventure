@@ -9,8 +9,6 @@
  * 0.1 - Initial implementation
 */
 
-// TODO: Not these big dirty global vars :p
-
 class GameEngine {
     constructor() {
         this.gfxEngine = new GGfxEngine();
