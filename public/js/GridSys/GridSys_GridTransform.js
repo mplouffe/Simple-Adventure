@@ -14,10 +14,16 @@ class GridTransform
         this.height = height;
     }
 
-    move(x, y)
+    moveIncrement(x, y)
     {
         this.location.x += x;
         this.location.y += y;
+    }
+
+    move(x, y)
+    {
+        this.location.x = x;
+        this.location.y = y;
     }
 
     // TODO: implement as needed

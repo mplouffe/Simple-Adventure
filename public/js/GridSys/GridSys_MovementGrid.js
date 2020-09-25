@@ -15,7 +15,15 @@ class Move
         this.dynamicObject = dynamicObject;
         this.origin = origin;
         this.target = target;
-        this.result = false;
+    }
+}
+
+class MoveResult
+{
+    constructor(origin, destination, result) {
+        this.origin = origin;
+        this.destination = destination;
+        this.result = result;
     }
 }
 
@@ -37,7 +45,7 @@ class MovementGrid
                 let yMax = currentDoor.origins[j].y + currentDoor.dimension.l;
                 for (let x = currentDoor.origins[j].x; x < xMax; x++) {
                     for (let y = currentDoor.origins[j].y; y < yMax; y++) {
-                        this.colliderMatrix[x][y] = 'D';
+                        this.colliderMatrix[x][y] = Colliders.door;
                     }
                 }
             }
@@ -50,7 +58,7 @@ class MovementGrid
                 let yMax = currentWall.origins[j].y + currentWall.dimension.l;
                 for (let x = currentWall.origins[j].x; x < xMax; x++) {
                     for (let y = currentWall.origins[j].y; y < yMax; y++) {
-                        this.colliderMatrix[x][y] = 'W';
+                        this.colliderMatrix[x][y] = Colliders.wall;
                     }
                 }
             }
@@ -79,21 +87,25 @@ class MovementGrid
                 currentMove.target.y < 0 || 
                 currentMove.target.y >= this.grid.row )
             {
-                currentMove.result = false;
-                currentMove.dynamicObject.resolveMove(currentMove);
+                let moveResult = new MoveResult(currentMove.origin,
+                                                currentMove.origin,
+                                                false);
+                currentMove.dynamicObject.resolveMove(moveResult);
             }
             else
             {
                 let collisions = this.colliderMatrix[currentMove.target.x][currentMove.target.y];
                 if (Boolean(collisions))
                 {
-                    currentMove.dynamicObject.resolveCollision(collisions);
+                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = currentMove.dynamicObject.resolveCollision(collisions);
                 }
                 else
                 {
-                    currentMove.result = true;
                     this.colliderMatrix[currentMove.target.x][currentMove.target.y] = currentMove.dynamicObject.collider;
-                    this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = currentMove.dynamicObject.resolveMove(currentMove);
+                    let moveResult = new MoveResult(currentMove.origin,
+                                                    currentMove.target,
+                                                    true);
+                    this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = currentMove.dynamicObject.resolveMove(moveResult);
                 }
             }
         }

@@ -18,16 +18,15 @@ class Player {
         this.name = name;
         this.gridTransform = new GridTransform(10, 10, 1, 1);
         this.gridRenderer = new GridRenderer('#FFF');
-        this.gridCollider = new PlayerCollider();
+        this.gridCollider = new PlayerCollider(this.gridTransform);
         this.inputEngine = inputEngine;
         this.tag = 'player';
         this.items = {};
         this.playerKeys = {};
         this.playerBattler = new Battler(50, 50, 10, 10, 10, 10, 10, this.name);
         this.stepped = false;
-        this.stepInterval = 100;
+        this.stepInterval = 25;
         this.lastStep = 0.0;
-        this.collider = 'P';
     }
 
     getMove()
@@ -64,6 +63,7 @@ class Player {
         }
         else
         {
+            this.lastStep = 0;
             return new Move(
                 this.gridCollider,
                 this.gridTransform.location,

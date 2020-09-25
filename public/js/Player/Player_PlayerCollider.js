@@ -10,22 +10,31 @@
 */
 
 class PlayerCollider {
-    constructor() {
-      this.collider = Colliders.player;      
+    constructor(gridTransformRef) {
+      this.collider = Colliders.player;
+      this.gridTransformRef = gridTransformRef;  
     }
 
     resolveCollision(collider) {
         switch (collider) {
             case Colliders.wall:
+                console.log("Player collided with wall");
                 break;
             case Colliders.door:
+                console.log("Player collided with door");
                 break;
         }
-        console.log("Player collided with: " + collider);
+
+        return this.collider;
     }
 
-    resolveMove(move) {
-        console.log(move);
+    resolveMove(moveResult) {
+        if (moveResult.result)
+        {
+            this.gridTransformRef.move(moveResult.destination.x, moveResult.destination.y);
+            return null;
+        }
+        console.log(moveResult);
         console.log("Player tried to move, but couldn't...");
         return this.collider;
     }
