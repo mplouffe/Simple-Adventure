@@ -24,8 +24,8 @@ class PlayerCollider {
                 console.log("Player collided with door");
                 break;
         }
-
-        return this.collider;
+        
+        return collider;
     }
 
     resolveMove(moveResult) {

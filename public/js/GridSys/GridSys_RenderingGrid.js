@@ -61,7 +61,7 @@ class RenderingGrid {
                 this.grid.height * currentRenderingElement.height
             );
         }
-
+        
         this.dynamicElementsToRender = [];
     }
 }
