@@ -17,6 +17,11 @@ const Colliders = {
     enemy: 5
 }
 
+const GameObjectComponentType = {
+    renderer: 1,
+    collider: 2,
+}
+
 class Enums 
 {
     static Initialize() {
