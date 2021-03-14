@@ -2,11 +2,12 @@
 * A wrapper around the grid base class with movement utility functions
 * Version: 0.1
 * Date Created: 09.07.2020
-* Last Updated: 09.07.2020
+* Last Updated: 03.13.2021
 * Author: Matheu Plouffe
 *
 * History
 * 0.1 - Initial implementation
+* 0.2 - Added Grid Collider
 */
 
 class Move
@@ -20,8 +21,7 @@ class Move
 
 class MoveResult
 {
-    constructor(origin, destination, result) {
-        this.origin = origin;
+    constructor(destination, result) {
         this.destination = destination;
         this.result = result;
     }
@@ -29,12 +29,13 @@ class MoveResult
 
 class MovementGrid
 {
-    constructor(basisGrid) {
+    constructor(basisGrid, gridCollider) {
         this.grid = basisGrid;
         this.colliderMatrix = [];
         for (let i = 0; i < this.grid.col; i++) {
             this.colliderMatrix[i] = [];
         }
+        this.gridCollider = gridCollider;
     }
 
     buildRoom(currentRoom) {
@@ -45,7 +46,10 @@ class MovementGrid
                 let yMax = currentDoor.origins[j].y + currentDoor.dimension.l;
                 for (let x = currentDoor.origins[j].x; x < xMax; x++) {
                     for (let y = currentDoor.origins[j].y; y < yMax; y++) {
-                        this.colliderMatrix[x][y] = Colliders.door;
+                        this.colliderMatrix[x][y] = { 
+                                                        "type": Colliders.door,
+                                                        "entity": currentDoor
+                                                    };
                     }
                 }
             }
@@ -58,7 +62,9 @@ class MovementGrid
                 let yMax = currentWall.origins[j].y + currentWall.dimension.l;
                 for (let x = currentWall.origins[j].x; x < xMax; x++) {
                     for (let y = currentWall.origins[j].y; y < yMax; y++) {
-                        this.colliderMatrix[x][y] = Colliders.wall;
+                        this.colliderMatrix[x][y] = {
+                                                        "type": Colliders.wall
+                                                    };
                     }
                 }
             }
@@ -82,11 +88,16 @@ class MovementGrid
         for (let i = 0; i < sortedMoves.length; i++)
         {
             let currentMove = sortedMoves[i];
+            // if trying to move outside the bounds of the level, don't even don't allow it
             if (currentMove.target.x < 0 || 
                 currentMove.target.x >= this.grid.col ||
                 currentMove.target.y < 0 || 
                 currentMove.target.y >= this.grid.row )
             {
+                // TODO: check for attempt to exit out door
+                // - fix collision resolution first
+                // - then when in this state, check array of current position collider in collider matrix
+                // - if it contains the door collider, trigger exit logic from door
                 let moveResult = new MoveResult(currentMove.origin,
                                                 currentMove.origin,
                                                 false);
@@ -97,14 +108,20 @@ class MovementGrid
                 let collisions = this.colliderMatrix[currentMove.target.x][currentMove.target.y];
                 if (Boolean(collisions))
                 {
-                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = currentMove.dynamicObject.resolveCollision(collisions);
+                    let currentCollider = { 
+                        "type": currentMove.dynamicObject.collider, 
+                        "entity": currentMove.dynamicObject
+                    };
+                    let colliders = [ collisions, currentCollider];
+                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = this.gridCollider.resolveCollision(colliders);
                 }
                 else
                 {
-                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = currentMove.dynamicObject.collider;
-                    let moveResult = new MoveResult(currentMove.origin,
-                                                    currentMove.target,
-                                                    true);
+                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = { 
+                                                                                        "type": currentMove.dynamicObject.collider, 
+                                                                                        "entity": currentMove.dynamicObject
+                                                                                    };
+                    let moveResult = new MoveResult(currentMove.target, true);
                     this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = currentMove.dynamicObject.resolveMove(moveResult);
                 }
             }

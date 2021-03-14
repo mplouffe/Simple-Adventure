@@ -22,6 +22,7 @@ class OverWorldState {
         this.playerRef = player;
 
         this.dynamicBodies = [ this.playerRef ];
+        this.gridCollider = new GridCollider();
         
         this.level = loadJSON("json/levelData.json");
 
@@ -103,7 +104,7 @@ class OverWorldState {
         this.gfxRef.canvas.width = currentRoom.width * currentRoom.cellWidth;
         this.gfxRef.canvas.height = currentRoom.height * currentRoom.cellHeight;
         this.roomGrid = new Grid(currentRoom.width, currentRoom.height, currentRoom.cellWidth, currentRoom.cellHeight, 1, 1);
-        this.movementGrid = new MovementGrid(this.roomGrid);
+        this.movementGrid = new MovementGrid(this.roomGrid, this.gridCollider);
         this.movementGrid.buildRoom(currentRoom);
         this.renderingGrid = new RenderingGrid(this.roomGrid, this.gfxRef, currentRoom.backgroundColor);
         for (let i = 0; i < currentRoom.walls.length; i++) {

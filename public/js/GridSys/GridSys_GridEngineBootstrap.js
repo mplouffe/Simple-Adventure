@@ -11,7 +11,6 @@
 
 
 var deltaTime = 0.0;
-var animate;
 var gameEngine;
 
 function load()
@@ -22,6 +21,7 @@ function load()
         window.webkitRequestAnimationFrame ||
         window.mozRequestAnimationFrame ||
         function(callback) { window.setTimeout(callback, 1000/60) };
+    
     gameEngine = new GameEngine();
 
     window.addEventListener("keydown", function(event) {
