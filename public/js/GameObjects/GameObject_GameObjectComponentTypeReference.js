@@ -13,7 +13,7 @@ class GameObjectComponentTypeReference
         }
     }  
 
-    addComponentReference(componentType, reference)
+    addComponentReference(componentType, referenceId)
     {
         if (!this.componentTypeReferenceMap.has(componentType))
         {
@@ -22,7 +22,7 @@ class GameObjectComponentTypeReference
         }
 
         let currentReferences = this.componentTypeReferenceMap.get(componentType)
-        currentReferences[currentReferences.length] = reference;
+        currentReferences[currentReferences.length] = referenceId;
     }
 
     getReferencesByComponentType(componentType)

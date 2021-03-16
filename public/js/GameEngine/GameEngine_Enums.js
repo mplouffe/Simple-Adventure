@@ -18,8 +18,10 @@ const Colliders = {
 }
 
 const GameObjectComponentType = {
-    renderer: 1,
-    collider: 2,
+    gameObject: 1,
+    player: 2,
+    renderer: 3,
+    collider: 4
 }
 
 class Enums 

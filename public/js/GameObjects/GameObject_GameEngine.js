@@ -2,11 +2,12 @@
 
 class GOGameEngine
 {
+    static gameObjectDirectory = new GameObjectDirectory();
+
     constructor() {
         this.gfxEngine = new GGfxEngine();
         this.inputEngine = new InputEngine();
 
-        this.gameObjectDirectory = new GameObjectDirectory();
         this.dynamicObjects = [];
         this.staticObjects = [];
         this.player = new Player(0, 10, 20, "Dude!!!", this.inputEngine);
@@ -24,5 +25,15 @@ class GOGameEngine
             deltaTime = currentTick - this.lastTick;
             this.lastTick = currentTick;
         }
+    }
+
+    static getGameObject(gameObjectId)
+    {
+        return this.gameObjectDirectory.getGameObject(gameObjectId);
+    }
+
+    static instantiateGameObject(gameObject)
+    {
+        this.gameObjectDirectory.addGameObjectToReferenceMap(gameObject);
     }
 }

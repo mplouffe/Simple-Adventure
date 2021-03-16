@@ -13,7 +13,7 @@
 
 /* WALL OBJECTS
  */
-class Wall{
+class Wall extends GameObject {
     constructor(x, y, height, width, color){	
         this.Object = new Object(x, y, height, width, color);
         this.tag = "solid";
