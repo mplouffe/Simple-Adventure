@@ -91,6 +91,7 @@ class MovementGrid
         while (sortedMoves.length > 0)
         {
             let currentMove = sortedMoves.pop();
+            console.log("going through sorted moves");
             // if trying to move outside the bounds of the level, don't even don't allow it
             if (currentMove.target.x < 0 || 
                 currentMove.target.x >= this.grid.col ||
@@ -177,7 +178,10 @@ class MovementGrid
                         {
                             filteredColliders.push(dyamicMoverResult);
                         }
-                        this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = filteredColliders;
+                        this.colliderMatrix[currentMove.origin.x+1][currentMove.origin.y] = filteredColliders;
+                        console.log(this.grid.col-1);
+                        console.log(currentMove.origin.x);
+                        console.log(currentMove.origin.y);
                         console.log("remaining Colliders: ");
                         console.log(this.colliderMatrix[currentMove.origin.x][currentMove.origin.y]);
                     }
