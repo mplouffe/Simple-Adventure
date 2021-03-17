@@ -36,6 +36,9 @@ class PlayerCollider {
         }
         console.log(moveResult);
         console.log("Player tried to move, but couldn't...");
-        return this.collider;
+        return {
+            type: this.collider,
+            entity: this
+        };
     }
 }

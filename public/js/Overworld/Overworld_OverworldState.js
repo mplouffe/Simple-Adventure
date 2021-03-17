@@ -33,6 +33,7 @@ class OverWorldState {
         this.stateName = "overworld";
         this.needsRefresh = true;
         this.roomBuilt = false;
+        this.shouldLoadLevel = false;
 
         // create the UI
         this.gfxRef.ui.setAttribute('class', 'textAdventureUI');
@@ -57,7 +58,7 @@ class OverWorldState {
         {
             allMoves[i] = this.dynamicBodies[i].getMove();
         }
-        this.movementGrid.resolveMoves(allMoves);
+        this.movementGrid.resolveMoves(allMoves, this);
 
         if (this.playerRef.stepped)
         {
@@ -66,13 +67,14 @@ class OverWorldState {
 
         if(this.loadNextLevel())
         {
+            this.shouldLoadLevel = false;
             this.roomBuilt = false;
             this.currentRoom = this.nextRoom;
         }
     }
 
     loadNextLevel(){
-        return false;
+        return this.shouldLoadLevel;
     }
 
     /* render

@@ -7,7 +7,7 @@ class GridCollider
         this.bootstrapGridCollider();
     }
 
-    resolveCollision(colliders)
+    resolveCollision(colliders, move)
     {
         let colliderTypes = [];
         for (let i = 0; i < colliders.length; i++)
@@ -23,7 +23,7 @@ class GridCollider
             let collisionCallbacks = this.callbacks.get(sortedColliderTypes);
             for (let i = 0; i < collisionCallbacks.length; i++)
             {
-                collisionCallbacks[i](colliders);
+                return collisionCallbacks[i](colliders, move);
             }
         }
     }
@@ -53,10 +53,32 @@ class GridCollider
     {
         let colliderTypes = [Colliders.player, Colliders.door].sort().join('');
         this.callbacks.set(colliderTypes, [this.onPlayerCollidesDoor]);
+        colliderTypes = [Colliders.player, Colliders.wall].sort().join('');
+        this.callbacks.set(colliderTypes, [this.onPlayerCollidesWall]);
     }
 
-    onPlayerCollidesDoor(colliders)
+    onPlayerCollidesDoor(colliders, move)
     {
-        console.log("Bonked door");
+        console.log("colliders: ");
+        console.log(colliders);
+        return { 
+            origin: null,
+            target: colliders,
+            moveResult: new MoveResult(move.target.x, move.target.y, true)
+        };
+    }
+
+    onPlayerCollidesWall(colliders, move)
+    {
+        return {
+            origin: {
+                "type": Colliders.player,
+                "entity": move.dynamicObject
+            },
+            target: {
+                "type": Colliders.wall
+            },
+            moveResult: new MoveResult(move.origin.x, move.origin.y, false)
+        };
     }
 }

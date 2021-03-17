@@ -27,7 +27,6 @@ class Player {
         this.stepped = false;
         this.stepInterval = 25;
         this.lastStep = 0.0;
-        this.type = GameObjectComponentType.player;
     }
 
     getMove()

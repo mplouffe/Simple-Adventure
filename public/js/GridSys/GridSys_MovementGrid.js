@@ -21,8 +21,11 @@ class Move
 
 class MoveResult
 {
-    constructor(destination, result) {
-        this.destination = destination;
+    constructor(destinationX, destinationY, result) {
+        this.destination = {
+            x: destinationX,
+            y: destinationY
+        };
         this.result = result;
     }
 }
@@ -71,7 +74,7 @@ class MovementGrid
         }
     }
 
-    resolveMoves(allMoves) {
+    resolveMoves(allMoves, overworldState) {
         if (allMoves.length == 0)
         {
             return;
@@ -80,27 +83,51 @@ class MovementGrid
         let sortedMoves = allMoves
                             .filter(Boolean)
                             .sort((a, b) => {
-                                if (a.initiative < b.initiative) return 1;
-                                else if (a.initiative > b.initiative) return -1;
+                                if (a.initiative > b.initiative) return 1;
+                                else if (a.initiative < b.initiative) return -1;
                                 else return 0;
                             });
 
-        for (let i = 0; i < sortedMoves.length; i++)
+        while (sortedMoves.length > 0)
         {
-            let currentMove = sortedMoves[i];
+            let currentMove = sortedMoves.pop();
             // if trying to move outside the bounds of the level, don't even don't allow it
             if (currentMove.target.x < 0 || 
                 currentMove.target.x >= this.grid.col ||
                 currentMove.target.y < 0 || 
                 currentMove.target.y >= this.grid.row )
             {
-                // TODO: check for attempt to exit out door
-                // - fix collision resolution first
-                // - then when in this state, check array of current position collider in collider matrix
-                // - if it contains the door collider, trigger exit logic from door
-                let moveResult = new MoveResult(currentMove.origin,
-                                                currentMove.origin,
-                                                false);
+                let moveResult;
+                let collisions = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+                if (this.checkPlayerCollisionsWithDoor(collisions))
+                {
+                    overworldState.shouldLoadLevel = true;
+                    overworldState.nextRoom = collisions.entity.exitTo;
+
+                    if (currentMove.target.x < 0)
+                    {
+                        moveResult = new MoveResult(this.grid.col, currentMove.target.y, true);
+                    }
+                    else if (currentMove.target.x >= this.grid.col)
+                    {
+                        moveResult = new MoveResult(0, currentMove.target.y, true);
+                    }
+                    else if (currentMove.target.y < 0)
+                    {
+                        moveResult = new MoveResult(currentMove.target.x, this.grid.row, true);
+                    }
+                    else if (currentMove.target.y >= this.grid.row)
+                    {
+                        moveResult = new MoveResult(currentMove.target.x, 0, true);
+                    }
+                }
+                else
+                {
+                    moveResult = new MoveResult(currentMove.origin.x,
+                        currentMove.origin.y,
+                        false);
+                }
+
                 currentMove.dynamicObject.resolveMove(moveResult);
             }
             else
@@ -113,7 +140,14 @@ class MovementGrid
                         "entity": currentMove.dynamicObject
                     };
                     let colliders = [ collisions, currentCollider];
-                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = this.gridCollider.resolveCollision(colliders);
+                    console.log("colliders:");
+                    console.log(colliders);
+                    let collisionResults = this.gridCollider.resolveCollision(colliders, currentMove);
+                    console.log("collisonResults: ");
+                    console.log(collisionResults);
+                    this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = collisionResults.origin;
+                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = collisionResults.target;
+                    currentMove.dynamicObject.resolveMove(collisionResults.moveResult);
                 }
                 else
                 {
@@ -121,10 +155,61 @@ class MovementGrid
                                                                                         "type": currentMove.dynamicObject.collider, 
                                                                                         "entity": currentMove.dynamicObject
                                                                                     };
-                    let moveResult = new MoveResult(currentMove.target, true);
-                    this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = currentMove.dynamicObject.resolveMove(moveResult);
+                    let currentColliders = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+                    console.log("currentColliders: ");
+                    console.log(currentColliders);
+                    let moveResult = new MoveResult(currentMove.target.x, currentMove.target.y, true);
+
+                    if (currentColliders != null && currentColliders.length > 1)
+                    {
+                        let filteredColliders = [];
+                        for(let i = 0; i < currentColliders.length; i++)
+                        {
+                            console.log("for collider in currentColliders");
+                            console.log(currentColliders[i]);
+                            if (currentColliders[i].type != currentMove.dynamicObject.collider)
+                            {
+                                filteredColliders.push(currentColliders[i]);
+                            }
+                        }
+                        let dyamicMoverResult = currentMove.dynamicObject.resolveMove(moveResult);
+                        if (dyamicMoverResult != null)
+                        {
+                            filteredColliders.push(dyamicMoverResult);
+                        }
+                        this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = filteredColliders;
+                        console.log("remaining Colliders: ");
+                        console.log(this.colliderMatrix[currentMove.origin.x][currentMove.origin.y]);
+                    }
+                    else
+                    {
+                        this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = currentMove.dynamicObject.resolveMove(moveResult);
+                    }                     
                 }
             }
+
+            console.log("currentColliderMatrix:");
+            console.log(this.colliderMatrix[this.grid.col-1]);
         }
+    }
+
+    checkPlayerCollisionsWithDoor(collisions)
+    {
+        let player, door;
+
+        for(let collider in collisions)
+        {
+            switch(collider.type)
+            {
+                case Colliders.player:
+                    player = true;
+                    break;
+                case Colliders.door:
+                    door = true;
+                    break;
+            }
+        }
+
+        return player && door;
     }
 }
