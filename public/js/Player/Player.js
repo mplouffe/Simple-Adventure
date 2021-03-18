@@ -64,14 +64,18 @@ class Player {
         else
         {
             this.lastStep = 0;
-            return new Move(
+            let move = new Move(
                 this.gridCollider,
-                this.gridTransform.location,
+                {
+                    x: this.gridTransform.location.x,
+                    y: this.gridTransform.location.y
+                },
                 {
                     x: this.gridTransform.location.x + this.playerMove.x,
                     y: this.gridTransform.location.y + this.playerMove.y
                 }
             );
+            return move;
         }
     }
 

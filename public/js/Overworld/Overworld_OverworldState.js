@@ -69,7 +69,7 @@ class OverWorldState {
         {
             this.shouldLoadLevel = false;
             this.roomBuilt = false;
-            this.currentRoom = this.nextRoom;
+            this.currentRoomIndex = this.nextRoom;
         }
     }
 
@@ -108,6 +108,7 @@ class OverWorldState {
         this.roomGrid = new Grid(currentRoom.width, currentRoom.height, currentRoom.cellWidth, currentRoom.cellHeight, 1, 1);
         this.movementGrid = new MovementGrid(this.roomGrid, this.gridCollider);
         this.movementGrid.buildRoom(currentRoom);
+        this.movementGrid.insertPlayer(this.playerRef);
         this.renderingGrid = new RenderingGrid(this.roomGrid, this.gfxRef, currentRoom.backgroundColor);
         for (let i = 0; i < currentRoom.walls.length; i++) {
             for (let j = 0; j < currentRoom.walls[i].origins.length; j++) {

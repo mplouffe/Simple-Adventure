@@ -34,8 +34,6 @@ class PlayerCollider {
             this.gridTransformRef.move(moveResult.destination.x, moveResult.destination.y);
             return null;
         }
-        console.log(moveResult);
-        console.log("Player tried to move, but couldn't...");
         return {
             type: this.collider,
             entity: this

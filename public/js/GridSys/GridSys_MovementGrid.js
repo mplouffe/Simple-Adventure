@@ -34,14 +34,12 @@ class MovementGrid
 {
     constructor(basisGrid, gridCollider) {
         this.grid = basisGrid;
-        this.colliderMatrix = [];
-        for (let i = 0; i < this.grid.col; i++) {
-            this.colliderMatrix[i] = [];
-        }
+        this.resetColliderMatrix();
         this.gridCollider = gridCollider;
     }
 
     buildRoom(currentRoom) {
+        this.resetColliderMatrix();
         for (let i = 0; i < currentRoom.doors.length; i++) {
             let currentDoor = currentRoom.doors[i];
             for (let j = 0; j < currentDoor.origins.length; j++) {
@@ -49,10 +47,10 @@ class MovementGrid
                 let yMax = currentDoor.origins[j].y + currentDoor.dimension.l;
                 for (let x = currentDoor.origins[j].x; x < xMax; x++) {
                     for (let y = currentDoor.origins[j].y; y < yMax; y++) {
-                        this.colliderMatrix[x][y] = { 
+                        this.colliderMatrix[x][y] = [{ 
                                                         "type": Colliders.door,
                                                         "entity": currentDoor
-                                                    };
+                                                    }];
                     }
                 }
             }
@@ -65,12 +63,20 @@ class MovementGrid
                 let yMax = currentWall.origins[j].y + currentWall.dimension.l;
                 for (let x = currentWall.origins[j].x; x < xMax; x++) {
                     for (let y = currentWall.origins[j].y; y < yMax; y++) {
-                        this.colliderMatrix[x][y] = {
+                        this.colliderMatrix[x][y] = [{
                                                         "type": Colliders.wall
-                                                    };
+                                                    }];
                     }
                 }
             }
+        }
+    }
+
+    resetColliderMatrix()
+    {
+        this.colliderMatrix = [];
+        for (let i = 0; i < this.grid.col; i++) {
+            this.colliderMatrix[i] = [];
         }
     }
 
@@ -91,7 +97,6 @@ class MovementGrid
         while (sortedMoves.length > 0)
         {
             let currentMove = sortedMoves.pop();
-            console.log("going through sorted moves");
             // if trying to move outside the bounds of the level, don't even don't allow it
             if (currentMove.target.x < 0 || 
                 currentMove.target.x >= this.grid.col ||
@@ -103,11 +108,12 @@ class MovementGrid
                 if (this.checkPlayerCollisionsWithDoor(collisions))
                 {
                     overworldState.shouldLoadLevel = true;
-                    overworldState.nextRoom = collisions.entity.exitTo;
+                    let door = collisions.filter(collider => collider.type == Colliders.door)[0];
+                    overworldState.nextRoom = door.entity.exitTo;
 
                     if (currentMove.target.x < 0)
                     {
-                        moveResult = new MoveResult(this.grid.col, currentMove.target.y, true);
+                        moveResult = new MoveResult(this.grid.col-1, currentMove.target.y, true);
                     }
                     else if (currentMove.target.x >= this.grid.col)
                     {
@@ -115,7 +121,7 @@ class MovementGrid
                     }
                     else if (currentMove.target.y < 0)
                     {
-                        moveResult = new MoveResult(currentMove.target.x, this.grid.row, true);
+                        moveResult = new MoveResult(currentMove.target.x, this.grid.row-1, true);
                     }
                     else if (currentMove.target.y >= this.grid.row)
                     {
@@ -128,7 +134,6 @@ class MovementGrid
                         currentMove.origin.y,
                         false);
                 }
-
                 currentMove.dynamicObject.resolveMove(moveResult);
             }
             else
@@ -136,38 +141,30 @@ class MovementGrid
                 let collisions = this.colliderMatrix[currentMove.target.x][currentMove.target.y];
                 if (Boolean(collisions))
                 {
-                    let currentCollider = { 
+                    collisions.push({ 
                         "type": currentMove.dynamicObject.collider, 
                         "entity": currentMove.dynamicObject
-                    };
-                    let colliders = [ collisions, currentCollider];
-                    console.log("colliders:");
-                    console.log(colliders);
-                    let collisionResults = this.gridCollider.resolveCollision(colliders, currentMove);
-                    console.log("collisonResults: ");
-                    console.log(collisionResults);
+                    });
+                    let collisionResults = this.gridCollider.resolveCollision(collisions, currentMove);
                     this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = collisionResults.origin;
                     this.colliderMatrix[currentMove.target.x][currentMove.target.y] = collisionResults.target;
                     currentMove.dynamicObject.resolveMove(collisionResults.moveResult);
                 }
                 else
                 {
-                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = { 
+                    // resolve move into empty square
+                    let moveResult = new MoveResult(currentMove.target.x, currentMove.target.y, true);
+                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = [{ 
                                                                                         "type": currentMove.dynamicObject.collider, 
                                                                                         "entity": currentMove.dynamicObject
-                                                                                    };
+                                                                                    }];
+                    // get make sure we replace collider in square moved off of
                     let currentColliders = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
-                    console.log("currentColliders: ");
-                    console.log(currentColliders);
-                    let moveResult = new MoveResult(currentMove.target.x, currentMove.target.y, true);
-
                     if (currentColliders != null && currentColliders.length > 1)
                     {
                         let filteredColliders = [];
                         for(let i = 0; i < currentColliders.length; i++)
                         {
-                            console.log("for collider in currentColliders");
-                            console.log(currentColliders[i]);
                             if (currentColliders[i].type != currentMove.dynamicObject.collider)
                             {
                                 filteredColliders.push(currentColliders[i]);
@@ -178,22 +175,22 @@ class MovementGrid
                         {
                             filteredColliders.push(dyamicMoverResult);
                         }
-                        this.colliderMatrix[currentMove.origin.x+1][currentMove.origin.y] = filteredColliders;
-                        console.log(this.grid.col-1);
-                        console.log(currentMove.origin.x);
-                        console.log(currentMove.origin.y);
-                        console.log("remaining Colliders: ");
-                        console.log(this.colliderMatrix[currentMove.origin.x][currentMove.origin.y]);
+                        this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = filteredColliders;
                     }
                     else
                     {
-                        this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = currentMove.dynamicObject.resolveMove(moveResult);
+                        let moveResolution = currentMove.dynamicObject.resolveMove(moveResult);
+                        if (moveResolution != null)
+                        {
+                            this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = moveResolution;
+                        }
+                        else
+                        {
+                            delete this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+                        }
                     }                     
                 }
             }
-
-            console.log("currentColliderMatrix:");
-            console.log(this.colliderMatrix[this.grid.col-1]);
         }
     }
 
@@ -201,9 +198,10 @@ class MovementGrid
     {
         let player, door;
 
-        for(let collider in collisions)
+        for(let i = 0; i < collisions.length; i++)
         {
-            switch(collider.type)
+            let colliderType = collisions[i].type;
+            switch(colliderType)
             {
                 case Colliders.player:
                     player = true;
@@ -215,5 +213,24 @@ class MovementGrid
         }
 
         return player && door;
+    }
+
+    insertPlayer(player)
+    {
+        let currentColliders = this.colliderMatrix[player.gridTransform.location.x][player.gridTransform.location.y];
+        if (currentColliders == undefined)
+        {
+            this.colliderMatrix[player.gridTransform.location.x][player.gridTransform.location.y] = [{
+                type: player.gridCollider.collider,
+                entity: player
+            }];
+        }
+        else
+        {
+            this.colliderMatrix[player.gridTransform.location.x][player.gridTransform.location.y].push({
+                type: player.gridCollider.collider,
+                entity: player
+            });
+        }
     }
 }

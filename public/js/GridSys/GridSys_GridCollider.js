@@ -59,8 +59,6 @@ class GridCollider
 
     onPlayerCollidesDoor(colliders, move)
     {
-        console.log("colliders: ");
-        console.log(colliders);
         return { 
             origin: null,
             target: colliders,
@@ -71,13 +69,13 @@ class GridCollider
     onPlayerCollidesWall(colliders, move)
     {
         return {
-            origin: {
+            origin: [{
                 "type": Colliders.player,
                 "entity": move.dynamicObject
-            },
-            target: {
+            }],
+            target: [{
                 "type": Colliders.wall
-            },
+            }],
             moveResult: new MoveResult(move.origin.x, move.origin.y, false)
         };
     }
