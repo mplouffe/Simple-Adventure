@@ -1,3 +1,14 @@
+/* Simple Adventure Grid Collider
+ * Callback system used to resolve object collision
+ * Version: 0.1
+ * Date Created: 03.13.2021
+ * Last Update: 03.17.2021
+ * Author: Matheu Plouffe
+ * 
+ * History
+ * 0.1 - Original version
+ */
+
 
 class GridCollider 
 {

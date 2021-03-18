@@ -2,7 +2,7 @@
 * A wrapper around the grid base class with movement utility functions
 * Version: 0.1
 * Date Created: 09.07.2020
-* Last Updated: 03.13.2021
+* Last Updated: 03.17.2021
 * Author: Matheu Plouffe
 *
 * History
@@ -97,7 +97,7 @@ class MovementGrid
         while (sortedMoves.length > 0)
         {
             let currentMove = sortedMoves.pop();
-            // if trying to move outside the bounds of the level, don't even don't allow it
+            // if trying to move outside the bounds of the level
             if (currentMove.target.x < 0 || 
                 currentMove.target.x >= this.grid.col ||
                 currentMove.target.y < 0 || 
@@ -107,10 +107,12 @@ class MovementGrid
                 let collisions = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
                 if (this.checkPlayerCollisionsWithDoor(collisions))
                 {
+                    // set flags to load next level
                     overworldState.shouldLoadLevel = true;
                     let door = collisions.filter(collider => collider.type == Colliders.door)[0];
                     overworldState.nextRoom = door.entity.exitTo;
 
+                    // position the player depending on where they exited
                     if (currentMove.target.x < 0)
                     {
                         moveResult = new MoveResult(this.grid.col-1, currentMove.target.y, true);
@@ -130,6 +132,7 @@ class MovementGrid
                 }
                 else
                 {
+                    // prevent entity from moving outside the bounds of the level
                     moveResult = new MoveResult(currentMove.origin.x,
                         currentMove.origin.y,
                         false);
@@ -141,13 +144,29 @@ class MovementGrid
                 let collisions = this.colliderMatrix[currentMove.target.x][currentMove.target.y];
                 if (Boolean(collisions))
                 {
+                    // resolve collisions
                     collisions.push({ 
                         "type": currentMove.dynamicObject.collider, 
                         "entity": currentMove.dynamicObject
                     });
                     let collisionResults = this.gridCollider.resolveCollision(collisions, currentMove);
-                    this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = collisionResults.origin;
-                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = collisionResults.target;
+                    if (collisionResults.origin == null)
+                    {
+                        delete this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+                    }
+                    else
+                    {
+                        this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = collisionResults.origin;
+                    }
+
+                    if (collisionResults.target == null)
+                    {
+                        delete this.colliderMatrix[currentMove.target.x][currentMove.target.y];
+                    }
+                    else
+                    {
+                        this.colliderMatrix[currentMove.target.x][currentMove.target.y] = collisionResults.target;
+                    }
                     currentMove.dynamicObject.resolveMove(collisionResults.moveResult);
                 }
                 else
@@ -158,10 +177,12 @@ class MovementGrid
                                                                                         "type": currentMove.dynamicObject.collider, 
                                                                                         "entity": currentMove.dynamicObject
                                                                                     }];
-                    // get make sure we replace collider in square moved off of
+
                     let currentColliders = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
                     if (currentColliders != null && currentColliders.length > 1)
                     {
+                        // remove player collider from square moved off of
+                        // leaving the rest in place
                         let filteredColliders = [];
                         for(let i = 0; i < currentColliders.length; i++)
                         {
@@ -179,6 +200,7 @@ class MovementGrid
                     }
                     else
                     {
+                        // clean up and leave behind the result of the move resolution
                         let moveResolution = currentMove.dynamicObject.resolveMove(moveResult);
                         if (moveResolution != null)
                         {
@@ -196,8 +218,8 @@ class MovementGrid
 
     checkPlayerCollisionsWithDoor(collisions)
     {
+        // if current collisions includes player and door then player is standing on a door
         let player, door;
-
         for(let i = 0; i < collisions.length; i++)
         {
             let colliderType = collisions[i].type;
@@ -217,6 +239,7 @@ class MovementGrid
 
     insertPlayer(player)
     {
+        // insert the player into the collider matrix
         let currentColliders = this.colliderMatrix[player.gridTransform.location.x][player.gridTransform.location.y];
         if (currentColliders == undefined)
         {
