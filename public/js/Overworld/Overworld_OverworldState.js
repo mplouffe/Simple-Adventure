@@ -130,9 +130,15 @@ class OverWorldState {
             if (currentDoor.locked)
             {
                 currentDoor.gridRenderer = new GridRenderer(currentDoor.doorColor);
-                //currentDoor.gridTransform = new GridTransform()
+                currentDoor.gridTransform = new GridTransform(currentDoor.origins.x, currentDoor.origins.y, currentDoor.dimension.w, currentDoor.dimension.l);
                 this.staticBodies.push(currentDoor);
             }
+        });
+
+        currentRoom.items.forEach((currentItem) => {
+            currentItem.gridRenderer = new GridRenderer(currentItem.itemColor);
+            currentItem.gridTransform = new GridTransform(currentItem.itemLocation.x, currentItem.itemLocation.y, 1, 1);
+            this.staticBodies.push(currentItem);
         });
         
         this.currentLevelRndEncounterEngine = new RndEncounterEngine(5, 20);

@@ -161,7 +161,7 @@
                         "x": 18,
                         "y": 29
                     },
-                    "locked": "false",
+                    "locked": false,
                     "exitTo": 0
                 }
             ],

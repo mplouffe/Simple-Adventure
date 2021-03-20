@@ -40,24 +40,20 @@ class MovementGrid
 
     buildRoom(currentRoom) {
         this.resetColliderMatrix();
-        for (let i = 0; i < currentRoom.doors.length; i++) {
-            let currentDoor = currentRoom.doors[i];
-            for (let j = 0; j < currentDoor.origins.length; j++) {
-                let xMax = currentDoor.origins[j].x + currentDoor.dimension.w;
-                let yMax = currentDoor.origins[j].y + currentDoor.dimension.l;
-                for (let x = currentDoor.origins[j].x; x < xMax; x++) {
-                    for (let y = currentDoor.origins[j].y; y < yMax; y++) {
-                        this.colliderMatrix[x][y] = [{ 
-                                                        "type": Colliders.door,
-                                                        "entity": currentDoor
-                                                    }];
-                    }
+        currentRoom.doors.forEach((currentDoor) => {
+            let xMax = currentDoor.origins.x + currentDoor.dimension.w;
+            let yMax = currentDoor.origins.y + currentDoor.dimension.l;
+            for (let x = currentDoor.origins.x; x < xMax; x++) {
+                for (let y = currentDoor.origins.y; y < yMax; y++) {
+                    this.colliderMatrix[x][y] = [{ 
+                                                    "type": Colliders.door,
+                                                    "entity": currentDoor
+                                                }];
                 }
             }
-        }
+        });
 
-        for (let i = 0; i < currentRoom.walls.length; i++) {
-            let currentWall = currentRoom.walls[i];
+        currentRoom.walls.forEach((currentWall) => {
             for (let j = 0; j < currentWall.origins.length; j++) {
                 let xMax = currentWall.origins[j].x + currentWall.dimension.w;
                 let yMax = currentWall.origins[j].y + currentWall.dimension.l;
@@ -69,7 +65,14 @@ class MovementGrid
                     }
                 }
             }
-        }
+        });
+
+        currentRoom.items.forEach((currentItem) => {
+            this.colliderMatrix[currentItem.itemLocation.x][currentItem.itemLocation.y] = [{ 
+                "type": Colliders.item,
+                "entity": currentItem
+            }];
+        });
     }
 
     resetColliderMatrix()
@@ -137,7 +140,7 @@ class MovementGrid
                         currentMove.origin.y,
                         false);
                 }
-                currentMove.dynamicObject.resolveMove(moveResult);
+                currentMove.dynamicObject.gridCollider.resolveMove(moveResult);
             }
             else
             {
@@ -146,7 +149,7 @@ class MovementGrid
                 {
                     // resolve collisions
                     collisions.push({ 
-                        "type": currentMove.dynamicObject.collider, 
+                        "type": currentMove.dynamicObject.gridCollider.collider, 
                         "entity": currentMove.dynamicObject
                     });
                     let collisionResults = this.gridCollider.resolveCollision(collisions, currentMove);
@@ -167,7 +170,7 @@ class MovementGrid
                     {
                         this.colliderMatrix[currentMove.target.x][currentMove.target.y] = collisionResults.target;
                     }
-                    currentMove.dynamicObject.resolveMove(collisionResults.moveResult);
+                    currentMove.dynamicObject.gridCollider.resolveMove(collisionResults.moveResult);
                 }
                 else
                 {
@@ -183,15 +186,8 @@ class MovementGrid
                     {
                         // remove player collider from square moved off of
                         // leaving the rest in place
-                        let filteredColliders = [];
-                        for(let i = 0; i < currentColliders.length; i++)
-                        {
-                            if (currentColliders[i].type != currentMove.dynamicObject.collider)
-                            {
-                                filteredColliders.push(currentColliders[i]);
-                            }
-                        }
-                        let dyamicMoverResult = currentMove.dynamicObject.resolveMove(moveResult);
+                        let filteredColliders = currentColliders.filter(collider => collider.type != currentMove.dynamicObject.gridCollider.collider);
+                        let dyamicMoverResult = currentMove.dynamicObject.gridCollider.resolveMove(moveResult);
                         if (dyamicMoverResult != null)
                         {
                             filteredColliders.push(dyamicMoverResult);
@@ -201,7 +197,7 @@ class MovementGrid
                     else
                     {
                         // clean up and leave behind the result of the move resolution
-                        let moveResolution = currentMove.dynamicObject.resolveMove(moveResult);
+                        let moveResolution = currentMove.dynamicObject.gridCollider.resolveMove(moveResult);
                         if (moveResolution != null)
                         {
                             this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = moveResolution;

@@ -66,15 +66,52 @@ class GridCollider
         this.callbacks.set(colliderTypes, [this.onPlayerCollidesDoor]);
         colliderTypes = [Colliders.player, Colliders.wall].sort().join('');
         this.callbacks.set(colliderTypes, [this.onPlayerCollidesWall]);
+        colliderTypes = [Colliders.player, Colliders.item].sort().join('');
+        this.callbacks.set(colliderTypes, [this.onPlayerCollidesItem]);
     }
 
     onPlayerCollidesDoor(colliders, move)
     {
-        return { 
-            origin: null,
-            target: colliders,
-            moveResult: new MoveResult(move.target.x, move.target.y, true)
-        };
+        let door = colliders.filter(collider => collider.type === Colliders.door)[0].entity;
+        let player = colliders.filter(collider => collider.type === Colliders.player)[0].entity;
+
+        let isBlocked = false;
+        if (door.locked)
+        {
+            if (player.checkForKey(door))
+            {
+                door.locked = false;
+                door.gridRenderer.render = false;        
+            }
+            else
+            {
+                isBlocked = true;
+            }
+        }
+
+        if (isBlocked)
+        {
+            return {
+                origin: [{
+                    "type": Colliders.player,
+                    "entity": move.dynamicObject
+                }],
+                target: [{
+                    "type": Colliders.door,
+                    "entity": door
+                }],
+                moveResult: new MoveResult(move.origin.x, move.origin.y, false)
+            };
+
+        }
+        else
+        {
+            return { 
+                origin: null,
+                target: colliders,
+                moveResult: new MoveResult(move.target.x, move.target.y, true)
+            };
+        }
     }
 
     onPlayerCollidesWall(colliders, move)
@@ -88,6 +125,29 @@ class GridCollider
                 "type": Colliders.wall
             }],
             moveResult: new MoveResult(move.origin.x, move.origin.y, false)
+        };
+    }
+
+    onPlayerCollidesItem(colliders, move)
+    {
+        let item = colliders.filter(collider => collider.type === Colliders.item)[0].entity;
+        let player = colliders.filter(collider => collider.type === Colliders.player)[0].entity;
+
+        switch(item.type)
+        {
+            case "key":
+                player.addKeyToInventory(item);
+                item.gridRenderer.render = false;
+                break;
+        }
+
+        return { 
+            origin: null,
+            target: [{
+                "type": Colliders.player,
+                "entity": move.dynamicObject
+            }],
+            moveResult: new MoveResult(move.target.x, move.target.y, true)
         };
     }
 }
