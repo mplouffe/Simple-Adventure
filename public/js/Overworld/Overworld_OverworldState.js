@@ -22,6 +22,7 @@ class OverWorldState {
         this.playerRef = player;
 
         this.dynamicBodies = [ this.playerRef ];
+        this.staticBodies = [];
         this.gridCollider = new GridCollider();
         
         this.level = loadJSON("json/levelData.json");
@@ -54,10 +55,8 @@ class OverWorldState {
         // MOVEMENT SYSTEM
         // 1) Get all proposed moves for all dynamic bodies
         let allMoves = [];
-        for(let i = 0; i < this.dynamicBodies.length; i++)
-        {
-            allMoves[i] = this.dynamicBodies[i].getMove();
-        }
+        this.dynamicBodies.forEach(dynamicBody => allMoves.push(dynamicBody.getMove()));
+
         this.movementGrid.resolveMoves(allMoves, this);
 
         if (this.playerRef.stepped)
@@ -83,7 +82,19 @@ class OverWorldState {
     render(){
         // Render Overworld
         // 1) Add elements to render
-        this.renderingGrid.addDynamicElement(this.playerRef);
+        this.dynamicBodies.forEach((dynamicBody) => {
+            if (dynamicBody.gridRenderer.render)
+            {
+                this.renderingGrid.addDynamicElement(dynamicBody);
+            }
+        });
+        this.staticBodies.forEach((staticBody) => {
+            if (staticBody.gridRenderer.render)
+            {
+                this.renderingGrid.addDynamicElement(staticBody);
+            }
+        });
+
         // 2) Render all elements
         this.renderingGrid.render();
     }
@@ -103,23 +114,27 @@ class OverWorldState {
     */
     buildRoom(){
         let currentRoom = this.level.rooms[this.currentRoomIndex];
+        this.staticBodies.length = 0;
         this.gfxRef.canvas.width = currentRoom.width * currentRoom.cellWidth;
         this.gfxRef.canvas.height = currentRoom.height * currentRoom.cellHeight;
         this.roomGrid = new Grid(currentRoom.width, currentRoom.height, currentRoom.cellWidth, currentRoom.cellHeight, 1, 1);
+        
         this.movementGrid = new MovementGrid(this.roomGrid, this.gridCollider);
         this.movementGrid.buildRoom(currentRoom);
         this.movementGrid.insertPlayer(this.playerRef);
+        
         this.renderingGrid = new RenderingGrid(this.roomGrid, this.gfxRef, currentRoom.backgroundColor);
-        for (let i = 0; i < currentRoom.walls.length; i++) {
-            for (let j = 0; j < currentRoom.walls[i].origins.length; j++) {
-                this.renderingGrid.addStaticElement(
-                    currentRoom.walls[i].origins[j].x,
-                    currentRoom.walls[i].origins[j].y,
-                    currentRoom.walls[i].dimension.w,
-                    currentRoom.walls[i].dimension.l,
-                    currentRoom.wallColor);
+        this.renderingGrid.buildRoom(currentRoom);
+
+        currentRoom.doors.forEach((currentDoor) => {
+            if (currentDoor.locked)
+            {
+                currentDoor.gridRenderer = new GridRenderer(currentDoor.doorColor);
+                //currentDoor.gridTransform = new GridTransform()
+                this.staticBodies.push(currentDoor);
             }
-        }
+        });
+        
         this.currentLevelRndEncounterEngine = new RndEncounterEngine(5, 20);
         this.roomBuilt = true;
     }

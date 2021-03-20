@@ -8,7 +8,7 @@
 
 class GridTransform
 {
-    constructor(x, y, width, height, color){
+    constructor(x, y, width, height){
         this.location = { x: x, y:y };
         this.width = width;
         this.height = height;
