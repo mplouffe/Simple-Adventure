@@ -174,7 +174,8 @@
                     "itemLocation": {
                         "x": 10,
                         "y": 10
-                    }
+                    },
+                    "pickedUp": false
                 }
             ]
         },
@@ -254,7 +255,8 @@
                     "itemLocation": {
                         "x": 30,
                         "y": 15
-                    }
+                    },
+                    "pickedUp": false
                 }
             ]
         }

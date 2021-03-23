@@ -136,11 +136,14 @@ class OverWorldState {
         });
 
         currentRoom.items.forEach((currentItem) => {
-            currentItem.gridRenderer = new GridRenderer(currentItem.itemColor);
-            currentItem.gridTransform = new GridTransform(currentItem.itemLocation.x, currentItem.itemLocation.y, 1, 1);
-            this.staticBodies.push(currentItem);
+            if (!currentItem.pickedUp)
+            {
+                currentItem.gridRenderer = new GridRenderer(currentItem.itemColor);
+                currentItem.gridTransform = new GridTransform(currentItem.itemLocation.x, currentItem.itemLocation.y, 1, 1);
+                this.staticBodies.push(currentItem);
+            }
         });
-        
+
         this.currentLevelRndEncounterEngine = new RndEncounterEngine(5, 20);
         this.roomBuilt = true;
     }

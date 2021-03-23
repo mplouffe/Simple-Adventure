@@ -133,11 +133,13 @@ class GridCollider
         let item = colliders.filter(collider => collider.type === Colliders.item)[0].entity;
         let player = colliders.filter(collider => collider.type === Colliders.player)[0].entity;
 
+        console.log("PlayerCollidesITem triggered");
         switch(item.type)
         {
             case "key":
                 player.addKeyToInventory(item);
                 item.gridRenderer.render = false;
+                item.pickedUp = true;
                 break;
         }
 
