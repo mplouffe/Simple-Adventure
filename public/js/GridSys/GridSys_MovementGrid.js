@@ -67,7 +67,7 @@ class MovementGrid
             }
         });
 
-        currentRoom.items.forEach((currentItem) => {
+        currentRoom.items.filter(currentItem => !currentItem.pickedUp).forEach((currentItem) => {
             this.colliderMatrix[currentItem.itemLocation.x][currentItem.itemLocation.y] = [{ 
                 "type": Colliders.item,
                 "entity": currentItem
@@ -106,60 +106,45 @@ class MovementGrid
                 currentMove.target.y < 0 || 
                 currentMove.target.y >= this.grid.row )
             {
-                let moveResult;
-                let collisions = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
-                if (this.checkPlayerCollisionsWithDoor(collisions))
-                {
-                    // set flags to load next level
-                    overworldState.shouldLoadLevel = true;
-                    let door = collisions.filter(collider => collider.type == Colliders.door)[0];
-                    overworldState.nextRoom = door.entity.exitTo;
-
-                    // position the player depending on where they exited
-                    if (currentMove.target.x < 0)
-                    {
-                        moveResult = new MoveResult(this.grid.col-1, currentMove.target.y, true);
-                    }
-                    else if (currentMove.target.x >= this.grid.col)
-                    {
-                        moveResult = new MoveResult(0, currentMove.target.y, true);
-                    }
-                    else if (currentMove.target.y < 0)
-                    {
-                        moveResult = new MoveResult(currentMove.target.x, this.grid.row-1, true);
-                    }
-                    else if (currentMove.target.y >= this.grid.row)
-                    {
-                        moveResult = new MoveResult(currentMove.target.x, 0, true);
-                    }
-                }
-                else
-                {
-                    // prevent entity from moving outside the bounds of the level
-                    moveResult = new MoveResult(currentMove.origin.x,
-                        currentMove.origin.y,
-                        false);
-                }
+                let moveResult = this.resolveOutOfBoundsMove(currentMove, overworldState);
                 currentMove.dynamicObject.gridCollider.resolveMove(moveResult);
             }
             else
             {
                 let collisions = this.colliderMatrix[currentMove.target.x][currentMove.target.y];
+                let origin = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
                 if (Boolean(collisions))
                 {
+                    
                     // resolve collisions
                     collisions.push({ 
                         "type": currentMove.dynamicObject.gridCollider.collider, 
                         "entity": currentMove.dynamicObject
                     });
+                    let remainingColliders = origin.filter(collider => collider.type !== currentMove.dynamicObject.gridCollider.collider);
                     let collisionResults = this.gridCollider.resolveCollision(collisions, currentMove);
                     if (collisionResults.origin == null)
                     {
-                        delete this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+                        if (remainingColliders.length == 0)
+                        {
+                            delete this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+                        }
+                        else
+                        {
+                            this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = remainingColliders;
+                        }
                     }
                     else
                     {
-                        this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = collisionResults.origin;
+                        if (remainingColliders.length == 0)
+                        {
+                            this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = collisionResults.origin;
+                        }
+                        else
+                        {
+                            collisionResults.origin.forEach(collider => remainingColliders.push(collider));
+                            this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = remainingColliders;   
+                        }
                     }
 
                     if (collisionResults.target == null)
@@ -251,5 +236,45 @@ class MovementGrid
                 entity: player
             });
         }
+    }
+
+    resolveOutOfBoundsMove(currentMove, overworldState)
+    {
+        let moveResult;
+        let collisions = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+        if (this.checkPlayerCollisionsWithDoor(collisions))
+        {
+            // set flags to load next level
+            overworldState.shouldLoadLevel = true;
+            let door = collisions.filter(collider => collider.type == Colliders.door)[0];
+            overworldState.nextRoom = door.entity.exitTo;
+
+            // position the player depending on where they exited
+            if (currentMove.target.x < 0)
+            {
+                moveResult = new MoveResult(this.grid.col-1, currentMove.target.y, true);
+            }
+            else if (currentMove.target.x >= this.grid.col)
+            {
+                moveResult = new MoveResult(0, currentMove.target.y, true);
+            }
+            else if (currentMove.target.y < 0)
+            {
+                moveResult = new MoveResult(currentMove.target.x, this.grid.row-1, true);
+            }
+            else if (currentMove.target.y >= this.grid.row)
+            {
+                moveResult = new MoveResult(currentMove.target.x, 0, true);
+            }
+        }
+        else
+        {
+            // prevent entity from moving outside the bounds of the level
+            moveResult = new MoveResult(currentMove.origin.x,
+                currentMove.origin.y,
+                false);
+        }
+
+        return moveResult;
     }
 }

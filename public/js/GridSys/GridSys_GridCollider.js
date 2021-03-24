@@ -32,10 +32,7 @@ class GridCollider
         if (this.callbacks.has(sortedColliderTypes))
         {
             let collisionCallbacks = this.callbacks.get(sortedColliderTypes);
-            for (let i = 0; i < collisionCallbacks.length; i++)
-            {
-                return collisionCallbacks[i](colliders, move);
-            }
+            return collisionCallbacks[0](colliders, move);
         }
     }
 
@@ -116,11 +113,9 @@ class GridCollider
 
     onPlayerCollidesWall(colliders, move)
     {
+        let remainingColliders = colliders.filter(collider => collider.type !== Colliders.wall);
         return {
-            origin: [{
-                "type": Colliders.player,
-                "entity": move.dynamicObject
-            }],
+            origin: remainingColliders,
             target: [{
                 "type": Colliders.wall
             }],
@@ -133,7 +128,6 @@ class GridCollider
         let item = colliders.filter(collider => collider.type === Colliders.item)[0].entity;
         let player = colliders.filter(collider => collider.type === Colliders.player)[0].entity;
 
-        console.log("PlayerCollidesITem triggered");
         switch(item.type)
         {
             case "key":
