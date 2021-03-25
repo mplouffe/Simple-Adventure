@@ -101,97 +101,21 @@ class MovementGrid
         {
             let currentMove = sortedMoves.pop();
             // if trying to move outside the bounds of the level
-            if (currentMove.target.x < 0 || 
-                currentMove.target.x >= this.grid.col ||
-                currentMove.target.y < 0 || 
-                currentMove.target.y >= this.grid.row )
+            if (this.movingOutOfBounds(currentMove))
             {
                 let moveResult = this.resolveOutOfBoundsMove(currentMove, overworldState);
                 currentMove.dynamicObject.gridCollider.resolveMove(moveResult);
             }
             else
             {
-                let collisions = this.colliderMatrix[currentMove.target.x][currentMove.target.y];
-                let origin = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+                let collisions = this.colliderMatrix[currentMove.target.x][currentMove.target.y];              
                 if (Boolean(collisions))
                 {
-                    
-                    // resolve collisions
-                    collisions.push({ 
-                        "type": currentMove.dynamicObject.gridCollider.collider, 
-                        "entity": currentMove.dynamicObject
-                    });
-                    let remainingColliders = origin.filter(collider => collider.type !== currentMove.dynamicObject.gridCollider.collider);
-                    let collisionResults = this.gridCollider.resolveCollision(collisions, currentMove);
-                    if (collisionResults.origin == null)
-                    {
-                        if (remainingColliders.length == 0)
-                        {
-                            delete this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
-                        }
-                        else
-                        {
-                            this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = remainingColliders;
-                        }
-                    }
-                    else
-                    {
-                        if (remainingColliders.length == 0)
-                        {
-                            this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = collisionResults.origin;
-                        }
-                        else
-                        {
-                            collisionResults.origin.forEach(collider => remainingColliders.push(collider));
-                            this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = remainingColliders;   
-                        }
-                    }
-
-                    if (collisionResults.target == null)
-                    {
-                        delete this.colliderMatrix[currentMove.target.x][currentMove.target.y];
-                    }
-                    else
-                    {
-                        this.colliderMatrix[currentMove.target.x][currentMove.target.y] = collisionResults.target;
-                    }
-                    currentMove.dynamicObject.gridCollider.resolveMove(collisionResults.moveResult);
+                    this.resolveCollisions(currentMove, collisions);
                 }
                 else
                 {
-                    // resolve move into empty square
-                    let moveResult = new MoveResult(currentMove.target.x, currentMove.target.y, true);
-                    this.colliderMatrix[currentMove.target.x][currentMove.target.y] = [{ 
-                                                                                        "type": currentMove.dynamicObject.collider, 
-                                                                                        "entity": currentMove.dynamicObject
-                                                                                    }];
-
-                    let currentColliders = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
-                    if (currentColliders != null && currentColliders.length > 1)
-                    {
-                        // remove player collider from square moved off of
-                        // leaving the rest in place
-                        let filteredColliders = currentColliders.filter(collider => collider.type != currentMove.dynamicObject.gridCollider.collider);
-                        let dyamicMoverResult = currentMove.dynamicObject.gridCollider.resolveMove(moveResult);
-                        if (dyamicMoverResult != null)
-                        {
-                            filteredColliders.push(dyamicMoverResult);
-                        }
-                        this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = filteredColliders;
-                    }
-                    else
-                    {
-                        // clean up and leave behind the result of the move resolution
-                        let moveResolution = currentMove.dynamicObject.gridCollider.resolveMove(moveResult);
-                        if (moveResolution != null)
-                        {
-                            this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = moveResolution;
-                        }
-                        else
-                        {
-                            delete this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
-                        }
-                    }                     
+                    this.resolveNonCollisionMove(currentMove);
                 }
             }
         }
@@ -277,4 +201,106 @@ class MovementGrid
 
         return moveResult;
     }
+
+    movingOutOfBounds(currentMove)
+    {
+        return currentMove.target.x < 0 || 
+        currentMove.target.x >= this.grid.col ||
+        currentMove.target.y < 0 || 
+        currentMove.target.y >= this.grid.row;
+    }
+
+    resolveCollisions(currentMove, collisions)
+    {
+        // resolve collisions
+        collisions.push({ 
+            "type": currentMove.dynamicObject.gridCollider.collider, 
+            "entity": currentMove.dynamicObject
+        });
+        console.log(collisions);
+        let origin = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+        console.log(origin);
+        let collisionResults = this.gridCollider.resolveCollision(collisions, currentMove);
+        let dynamicMoveResult = currentMove.dynamicObject.gridCollider.resolveMove(collisionResults.moveResult);
+        let remainingColliders = origin.filter(collider => collider.type !== currentMove.dynamicObject.gridCollider.collider);
+
+        if (dynamicMoveResult !== null)
+        {
+            remainingColliders.push(dynamicMoveResult);
+        }
+        
+        if (collisionResults.origin == null)
+        {
+            if (remainingColliders.length == 0)
+            {
+                delete this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+            }
+            else
+            {
+                this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = remainingColliders;
+            }
+        }
+        else
+        {
+            if (remainingColliders.length == 0)
+            {
+                this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = collisionResults.origin;
+            }
+            else
+            {
+                collisionResults.origin.forEach(collider => remainingColliders.push(collider));
+                this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = remainingColliders;   
+            }
+        }
+
+        if (collisionResults.target == null)
+        {
+            delete this.colliderMatrix[currentMove.target.x][currentMove.target.y];
+        }
+        else
+        {
+            this.colliderMatrix[currentMove.target.x][currentMove.target.y] = collisionResults.target;
+        }
+
+        
+        console.log(origin);
+    }
+
+    resolveNonCollisionMove(currentMove)
+    {
+        // resolve move into empty square
+        let moveResult = new MoveResult(currentMove.target.x, currentMove.target.y, true);
+
+        this.colliderMatrix[currentMove.target.x][currentMove.target.y] = [{ 
+            "type": currentMove.dynamicObject.collider, 
+            "entity": currentMove.dynamicObject
+        }];
+
+        let currentColliders = this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+        if (currentColliders != null && currentColliders.length > 1)
+        {
+            // remove player collider from square moved off of
+            // leaving the rest in place
+            let filteredColliders = currentColliders.filter(collider => collider.type != currentMove.dynamicObject.gridCollider.collider);
+            let dyamicMoverResult = currentMove.dynamicObject.gridCollider.resolveMove(moveResult);
+            if (dyamicMoverResult != null)
+            {
+                filteredColliders.push(dyamicMoverResult);
+            }
+            this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = filteredColliders;
+        }
+        else
+        {
+            // clean up and leave behind the result of the move resolution
+            let moveResolution = currentMove.dynamicObject.gridCollider.resolveMove(moveResult);
+            if (moveResolution != null)
+            {
+            this.colliderMatrix[currentMove.origin.x][currentMove.origin.y] = moveResolution;
+            }
+            else
+            {
+            delete this.colliderMatrix[currentMove.origin.x][currentMove.origin.y];
+            }
+        }
+    }                     
 }

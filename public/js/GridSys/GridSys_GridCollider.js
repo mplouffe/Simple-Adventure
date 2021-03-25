@@ -34,6 +34,10 @@ class GridCollider
             let collisionCallbacks = this.callbacks.get(sortedColliderTypes);
             return collisionCallbacks[0](colliders, move);
         }
+        else
+        {
+            console.log("Could not find collision callback for provided collider types: " + sortedColliderTypes);
+        }
     }
 
     addCollisionCallback(colliderTypes, callback)
@@ -114,6 +118,7 @@ class GridCollider
     onPlayerCollidesWall(colliders, move)
     {
         let remainingColliders = colliders.filter(collider => collider.type !== Colliders.wall);
+        console.log(remainingColliders);
         return {
             origin: remainingColliders,
             target: [{
@@ -137,13 +142,27 @@ class GridCollider
                 break;
         }
 
-        return { 
-            origin: null,
-            target: [{
-                "type": Colliders.player,
-                "entity": move.dynamicObject
-            }],
-            moveResult: new MoveResult(move.target.x, move.target.y, true)
-        };
+        if (item.pickedUp)
+        {
+            console.log("Item picked up");
+            return { 
+                origin: null,
+                target: [{
+                    "type": Colliders.player,
+                    "entity": move.dynamicObject
+                }],
+                moveResult: new MoveResult(move.target.x, move.target.y, true)
+            };
+        }
+        else
+        {
+            console.log("Item not picked up");
+            return {
+                origin: null,
+                target: colliders,
+                moveResult: new MoveResult(move.target.x, move.target.y, true)
+            }
+        }
+
     }
 }
