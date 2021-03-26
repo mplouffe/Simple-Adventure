@@ -118,7 +118,6 @@ class GridCollider
     onPlayerCollidesWall(colliders, move)
     {
         let remainingColliders = colliders.filter(collider => collider.type !== Colliders.wall);
-        console.log(remainingColliders);
         return {
             origin: remainingColliders,
             target: [{
