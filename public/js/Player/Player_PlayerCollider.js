@@ -32,11 +32,7 @@ class PlayerCollider {
         if (moveResult.result)
         {
             this.gridTransformRef.move(moveResult.destination.x, moveResult.destination.y);
-            return null;
         }
-        return {
-            type: this.collider,
-            entity: this
-        };
+        return null;
     }
 }
