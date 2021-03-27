@@ -139,11 +139,15 @@ class GridCollider
                 item.gridRenderer.render = false;
                 item.pickedUp = true;
                 break;
+            case "victory":
+                player.addItemToInventory(item);
+                item.gridRenderer.render = false;
+                item.pickedUp = true;
+                break;
         }
 
         if (item.pickedUp)
         {
-            console.log("Item picked up");
             return { 
                 origin: null,
                 target: [{
@@ -155,7 +159,6 @@ class GridCollider
         }
         else
         {
-            console.log("Item not picked up");
             return {
                 origin: null,
                 target: colliders,

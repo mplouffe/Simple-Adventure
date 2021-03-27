@@ -22,7 +22,7 @@ class GameEngine {
 
     step() {
         if(!this.stopAnimating) {
-            this.stateMachine.update();
+            this.stopAnimating = this.stateMachine.update();
             this.stateMachine.render();
             let currentTick = Date.now();
             deltaTime = currentTick - this.lastTick;

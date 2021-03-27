@@ -55,7 +55,7 @@ class StateStack{
 
     update() {
         if (this.currentState != null) {
-            this.currentState.update();
+            return this.currentState.update();
         }
     }
 

@@ -23,6 +23,7 @@ class Player {
         this.tag = 'player';
         this.items = {};
         this.playerKeys = [];
+        this.playerItems = [];
         this.playerBattler = new Battler(50, 50, 10, 10, 10, 10, 10, this.name);
         this.stepped = false;
         this.stepInterval = 25;
@@ -86,9 +87,26 @@ class Player {
 
     checkForKey(door)
     {
-        for(var i = 0; i < this.playerKeys.length; i++)
+        for(let i = 0; i < this.playerKeys.length; i++)
         {
             if(this.playerKeys[i].id == door.key)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    addItemToInventory(item)
+    {
+        this.playerItems.push(item);
+    }
+
+    checkForItemByType(itemType)
+    {
+        for(let i = 0; i < this.playerItems.length; i++)
+        {
+            if (this.playerItems[i].type = itemType)
             {
                 return true;
             }

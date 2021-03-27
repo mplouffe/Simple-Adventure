@@ -70,6 +70,13 @@ class OverWorldState {
             this.roomBuilt = false;
             this.currentRoomIndex = this.nextRoom;
         }
+
+        let victory = this.playerRef.checkForItemByType("victory");
+        if (victory)
+        {
+            console.log("Congrats! You've won the game!");
+        }
+        return victory;
     }
 
     loadNextLevel(){
