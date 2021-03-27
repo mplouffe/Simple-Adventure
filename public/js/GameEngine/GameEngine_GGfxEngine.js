@@ -16,7 +16,7 @@ class GGfxEngine {
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'gameCanvas');
         this.gameWindow = document.createElement('section');
-        this.ui = document.createElement('p');
+        this.ui = document.createElement('div');
 
         this.gameWindow.appendChild(this.canvas);
         this.gameWindow.appendChild(this.ui);

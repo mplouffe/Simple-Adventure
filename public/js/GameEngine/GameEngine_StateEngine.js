@@ -40,9 +40,17 @@ class StateStack{
             this.currentState.removeState();
         }
         this.stateStack.pop();
-        this.currentState = this.stateStack[this.stateStack.length - 1];
+        if (this.stateStack.length > 0)
+        {
+            this.currentState = this.stateStack[this.stateStack.length - 1];
+        }
+        else
+        {
+            this.currentState = null;
+        }
+
         // refresh the new current state if needed
-        if (this.currentState != null && this.currentState.needsRefresh === true) {
+        if (this.currentState != null) {
             this.currentState.refresh();
         }
     }
@@ -57,9 +65,26 @@ class StateStack{
         if (this.currentState != null) {
             return this.currentState.update();
         }
+        else
+        {
+            // TODO: Return something to turn this off
+            return true;
+        }
     }
 
     getCurrentState() {
         return this.currentState;
+    }
+
+    getStateResult() {
+        if (this.currentState === null)
+        {
+            return StateResult.empty;
+        }
+        else
+        {
+            return this.currentState.getStateResult();
+        }
+
     }
 }

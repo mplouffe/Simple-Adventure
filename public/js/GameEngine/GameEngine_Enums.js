@@ -17,9 +17,15 @@ const Colliders = {
     enemy: 5
 }
 
+const StateResult = {
+    remove: 1,
+    empty: 2
+}
+
 class Enums 
 {
     static Initialize() {
         Object.freeze(Colliders);
+        Object.freeze(StateResult);
     }
 }

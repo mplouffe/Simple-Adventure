@@ -108,12 +108,36 @@ class OverWorldState {
 
     removeState()
     {
-        this.gfxRef.ui.parentElement.removeChild(this.gfxRef.ui);
+        this.gfxRef.ui.innerHTML = "";
     }
 
     coverState()
     {
         this.gfxRef.ui.parentElement.removeChild(this.gfxRef.ui);
+    }
+
+    getStateResult()
+    {
+        return StateResult.remove;
+    }
+
+    refresh()
+    {
+        if (typeof this.gfxRef.ui === 'undefined')
+        {
+            this.gfxRef.ui = document.createElement('p');
+        }
+        
+        this.gfxRef.ui.setAttribute('class', 'textAdventureUI');
+        this.gfxRef.ui.innerHTML = 'Health: ' + this.playerRef.playerBattler.hitPoints +
+                ' Mana: ' + this.playerRef.playerBattler.magicPoints +
+                ' Score: ' + this.playerRef.score;
+
+        this.gfxRef.canvas.setAttribute('class', 'overWorldWindow');
+        this.gfxRef.canvas.width = owWidth;
+        this.gfxRef.canvas.height = owHeight;
+        this.gfxRef.gameWindow.appendChild(ui);
+        this.gfxRef.gameWindow.setAttribute('class', 'overWorldSection')
     }
 
     /* BuildLevel
@@ -153,24 +177,5 @@ class OverWorldState {
 
         this.currentLevelRndEncounterEngine = new RndEncounterEngine(5, 20);
         this.roomBuilt = true;
-    }
-
-    refresh()
-    {
-        if (typeof this.gfxRef.ui === 'undefined')
-        {
-            this.gfxRef.ui = document.createElement('p');
-        }
-        
-        this.gfxRef.ui.setAttribute('class', 'textAdventureUI');
-        this.gfxRef.ui.innerHTML = 'Health: ' + this.playerRef.playerBattler.hitPoints +
-                ' Mana: ' + this.playerRef.playerBattler.magicPoints +
-                ' Score: ' + this.playerRef.score;
-
-        this.gfxRef.canvas.setAttribute('class', 'overWorldWindow');
-        this.gfxRef.canvas.width = owWidth;
-        this.gfxRef.canvas.height = owHeight;
-        this.gfxRef.gameWindow.appendChild(ui);
-        this.gfxRef.gameWindow.setAttribute('class', 'overWorldSection')
     }
 }
