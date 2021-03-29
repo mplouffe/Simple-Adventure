@@ -14,9 +14,11 @@ class GameEngine {
         this.gfxEngine = new GGfxEngine();
         this.inputEngine = new InputEngine();
         this.player = new Player(0, 10, 20, "Dude!!!", this.inputEngine);
+        this.stateFactory = new MenuStateFactory(this.gfxEngine, this.inputEngine);
         
-        this.stateMachine = new StateStack(new MenuState(this.gfxEngine, "<p>You Win</p><p>Game Over</p>"));
+        this.stateMachine = new StateStack(this.stateFactory.getEndMenuState());
         this.stateMachine.pushState(new OverWorldState(this.gfxEngine, this.player));
+        this.stateMachine.pushState(this.stateFactory.getStartMenuState());
         console.log(this.stateMachine);
         this.changeState = false;
         this.start = Date.now();

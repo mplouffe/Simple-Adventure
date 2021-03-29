@@ -2,10 +2,11 @@
 
 class MenuState
 {
-    constructor(gfxEngine, menuContent)
+    constructor(gfxEngine, inputEngine, menuContent)
     {
         this.gfxRef = gfxEngine;
         this.menuContent = menuContent;
+        this.inputEngine = inputEngine;
 
         this.gfxRef.ui.setAttribute('class', 'textAdventureMenu');
         this.gfxRef.ui.setAttribute('id', 'menuUI');
@@ -14,7 +15,18 @@ class MenuState
 
     update()
     {
-        return false;
+        let updateResult = false;
+        for(let key in this.inputEngine.keysDown){
+            let value = Number(key);
+            switch (value)
+            {
+                case 32:
+                    updateResult = true;
+                    break;
+            }
+        }
+
+        return updateResult;
     }
 
     render()
