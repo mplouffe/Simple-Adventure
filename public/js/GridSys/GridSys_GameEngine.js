@@ -19,7 +19,6 @@ class GameEngine {
         this.stateMachine = new StateStack(this.stateFactory.getEndMenuState());
         this.stateMachine.pushState(new OverWorldState(this.gfxEngine, this.player));
         this.stateMachine.pushState(this.stateFactory.getStartMenuState());
-        console.log(this.stateMachine);
         this.changeState = false;
         this.start = Date.now();
         this.lastTick = this.start;
@@ -37,6 +36,7 @@ class GameEngine {
             {
                 case StateResult.remove:
                     this.stateMachine.popState();
+                    this.changeState = false;
                     break;
                 case StateResult.empty:
                     // TODO: What to do with an emtpy state machine

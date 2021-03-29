@@ -7,7 +7,8 @@ class MenuState
         this.gfxRef = gfxEngine;
         this.menuContent = menuContent;
         this.inputEngine = inputEngine;
-
+        this.gfxRef.canvas.width = 820;
+        this.gfxRef.canvas.height = 600;
         this.gfxRef.ui.setAttribute('class', 'textAdventureMenu');
         this.gfxRef.ui.setAttribute('id', 'menuUI');
         this.gfxRef.ui.innerHTML = this.menuContent;
@@ -25,7 +26,6 @@ class MenuState
                     break;
             }
         }
-
         return updateResult;
     }
 
@@ -46,7 +46,7 @@ class MenuState
 
     getStateResult()
     {
-
+        return StateResult.remove;
     }
 
     refresh()

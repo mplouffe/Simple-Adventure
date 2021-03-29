@@ -72,10 +72,6 @@ class OverWorldState {
         }
 
         let victory = this.playerRef.checkForItemByType("victory");
-        if (victory)
-        {
-            console.log("Congrats! You've won the game!");
-        }
         return victory;
     }
 
@@ -113,7 +109,6 @@ class OverWorldState {
 
     coverState()
     {
-        this.gfxRef.ui.parentElement.removeChild(this.gfxRef.ui);
     }
 
     getStateResult()
@@ -125,18 +120,19 @@ class OverWorldState {
     {
         if (typeof this.gfxRef.ui === 'undefined')
         {
-            this.gfxRef.ui = document.createElement('p');
+            this.gfxRef.ui = document.createElement('div');
         }
         
+        this.gfxRef.ui.setAttribute('id', 'overworldUI');
         this.gfxRef.ui.setAttribute('class', 'textAdventureUI');
         this.gfxRef.ui.innerHTML = 'Health: ' + this.playerRef.playerBattler.hitPoints +
                 ' Mana: ' + this.playerRef.playerBattler.magicPoints +
                 ' Score: ' + this.playerRef.score;
 
+        let currentRoom = this.level.rooms[this.currentRoomIndex];
         this.gfxRef.canvas.setAttribute('class', 'overWorldWindow');
-        this.gfxRef.canvas.width = owWidth;
-        this.gfxRef.canvas.height = owHeight;
-        this.gfxRef.gameWindow.appendChild(ui);
+        this.gfxRef.canvas.width = currentRoom.width * currentRoom.cellWidth;
+        this.gfxRef.canvas.height = currentRoom.height * currentRoom.cellHeight;
         this.gfxRef.gameWindow.setAttribute('class', 'overWorldSection')
     }
 
