@@ -17,13 +17,13 @@
  */
 
 class OverWorldState {
-    constructor(gfxEngine, player){
+    constructor(gfxEngine, player, stateFactory){
         this.gfxRef = gfxEngine;
         this.playerRef = player;
 
         this.dynamicBodies = [ this.playerRef ];
         this.staticBodies = [];
-        this.gridCollider = new GridCollider();
+        this.gridCollider = new GridCollider(stateFactory);
         
         this.level = loadJSON("json/levelData.json");
 

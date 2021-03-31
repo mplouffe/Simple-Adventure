@@ -12,8 +12,9 @@
 
 class GridCollider 
 {
-    constructor()
+    constructor(stateStack)
     {
+        this.gameEngineStateStack = stateStack;
         this.callbacks = new Map();
         this.bootstrapGridCollider();
     }
@@ -103,7 +104,6 @@ class GridCollider
                 }],
                 moveResult: new MoveResult(move.origin.x, move.origin.y, false)
             };
-
         }
         else
         {
@@ -169,6 +169,8 @@ class GridCollider
 
     onPlayerCollidesEnemy(colliders, move)
     {
+        let enemy = colliders.filter(collider => collider.type === Colliders.item)[0].entity;
+
         
     }
 }

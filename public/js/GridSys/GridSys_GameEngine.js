@@ -17,7 +17,7 @@ class GameEngine {
         this.stateFactory = new MenuStateFactory(this.gfxEngine, this.inputEngine);
         
         this.stateMachine = new StateStack(this.stateFactory.getEndMenuState());
-        this.stateMachine.pushState(new OverWorldState(this.gfxEngine, this.player));
+        this.stateMachine.pushState(new OverWorldState(this.gfxEngine, this.player, this.stateFactory));
         this.stateMachine.pushState(this.stateFactory.getStartMenuState());
         this.changeState = false;
         this.start = Date.now();
