@@ -165,6 +165,10 @@ class GridCollider
                 moveResult: new MoveResult(move.target.x, move.target.y, true)
             }
         }
+    }
 
+    onPlayerCollidesEnemy(colliders, move)
+    {
+        
     }
 }

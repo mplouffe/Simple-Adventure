@@ -39,6 +39,7 @@ var step = function() {
         gameEngine.step();
         window.requestAnimationFrame(step);
     }
+    console.log("Final tick");
 }
 
 document.addEventListener("DOMContentLoaded", load, false);

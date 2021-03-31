@@ -11,22 +11,29 @@ class MenuState
         this.gfxRef.canvas.height = 600;
         this.gfxRef.ui.setAttribute('class', 'textAdventureMenu');
         this.gfxRef.ui.setAttribute('id', 'menuUI');
-        this.gfxRef.ui.innerHTML = this.menuContent;
+        this.gfxRef.ui.innerHTML = this.menuContent.textContent;
     }
 
     update()
     {
-        let updateResult = false;
-        for(let key in this.inputEngine.keysDown){
-            let value = Number(key);
-            switch (value)
-            {
-                case 32:
-                    updateResult = true;
-                    break;
+        if (this.menuContent.seekInput)
+        { 
+            let updateResult = false;
+            for(let key in this.inputEngine.keysDown){
+                let value = Number(key);
+                switch (value)
+                {
+                    case 32:
+                        updateResult = true;
+                        break;
+                }
             }
+            return updateResult;
         }
-        return updateResult;
+        else
+        {
+            return true;
+        }
     }
 
     render()
@@ -53,6 +60,6 @@ class MenuState
     {
         this.gfxRef.ui.setAttribute('class', 'textAdventureMenu');
         this.gfxRef.ui.setAttribute('id', 'menuUI');
-        this.gfxRef.ui.innerHTML = this.menuContent;
+        this.gfxRef.ui.innerHTML = this.menuContent.textContent;
     }
 }

@@ -10,11 +10,21 @@ class MenuStateFactory
 
     getStartMenuState()
     {
-        return new MenuState(this.gfxRef, this.inputEngine, "<p>Simple Adventure</p><p>Press Space Bar to Start</p>");
+        let menuContent = 
+        {
+            textContent: "<p>Simple Adventure</p><p>Press Space Bar to Start</p>",
+            seekInput: true
+        };
+        return new MenuState(this.gfxRef, this.inputEngine, menuContent);
     }
 
     getEndMenuState()
     {
-        return new MenuState(this.gfxRef, this.inputEngine, "<p>You Win</p><p>Game Over</p>");
+        let menuContent = 
+        {
+            textContent: "<p>You Win</p><p>Game Over</p>",
+            seekInput: false
+        };
+        return new MenuState(this.gfxRef, this.inputEngine, menuContent);
     }
 }

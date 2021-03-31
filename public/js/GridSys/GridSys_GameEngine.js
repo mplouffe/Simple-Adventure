@@ -21,6 +21,7 @@ class GameEngine {
         this.stateMachine.pushState(this.stateFactory.getStartMenuState());
         this.changeState = false;
         this.start = Date.now();
+        this.stopAnimating = false;
         this.lastTick = this.start;
     }
 
@@ -39,7 +40,7 @@ class GameEngine {
                     this.changeState = false;
                     break;
                 case StateResult.empty:
-                    // TODO: What to do with an emtpy state machine
+                    this.stopAnimating = true;
                     break;
             }
 

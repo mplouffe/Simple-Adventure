@@ -67,7 +67,6 @@ class StateStack{
         }
         else
         {
-            // TODO: Return something to turn this off
             return true;
         }
     }
