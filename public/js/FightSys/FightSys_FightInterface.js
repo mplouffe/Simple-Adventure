@@ -15,16 +15,13 @@
 class FightInterface
 {
     constructor(gfxRef){
-
         // set a reference to the section passed in
-        this.fightSection = gfxRef;
+        this.gfxEngine = gfxRef;
         // set the class to 'fightSection'
-        this.fightSection.setAttribute('class', 'fightSection');
+        this.gfxEngine.gameWindow.setAttribute('class', 'fightSection');
         
         // set a reference to the canvas passed in
-        this.enemyWindow = gfxRef.canvas;
-        // set the class to 'enemyWindow'
-        this.enemyWindow.setAttribute('class', 'enemyWindow');
+        this.gfxEngine.canvas.setAttribute('class', 'enemyWindow');
         
         // build the leftInputDiv
         this.buildLeftInputDiv();
@@ -34,13 +31,15 @@ class FightInterface
         this.buildOutputWindow();
         // build the UI
         this.buildUI();
+
+        this.inputMenus = [];
         
         // declare a couple of variables that are the dimensions of the enemy window
         let ewWidth = 400;
         let ewHeight = 300;
         // set the enemy window's width and height to the width and height of the window
-        this.enemyWindow.width = ewWidth;
-        this.enemyWindow.height = ewHeight;
+        this.gfxEngine.canvas.width = ewWidth;
+        this.gfxEngine.canvas.height = ewHeight;
         // get a reference to the context of the canvas
         this.enemyWindowContext = this.enemyWindow.getContext('2d');
 
@@ -54,10 +53,8 @@ class FightInterface
 
     cleanUp()
     {
-        // get an array of inputMenus
-        let inputMenus = document.getElementsByTagName('section')[0].getElementsByTagName('div');
         // for each of the inputMenus in the array
-        for(let i = inputMenus.length - 1; i > 0; i--)
+        for(let i = inputMenus.length - 1; i >= 0; i--)
         {
             // get the parent of the inputMenu
             let parent = inputMenus[i].parentElement;
@@ -96,27 +93,17 @@ class FightInterface
         this.leftInputDiv.appendChild(this.leftInputIcon);
         // set the leftInputDiv style to 'none'
         this.leftInputDiv.style.display = "none";
+
+        this.inputMenus[this.inputMenus.length] = this.leftInpuDiv; 
         // append the leftInputDiv to the fightSection of the fight interface
-        this.fightSection.appendChild(this.leftInputDiv);
+        this.gfxEngine.gameWindow.appendChild(this.leftInputDiv);
     }
 
     buildUI()
     {
-        // create a new div element
-        this.fightWindowUIDiv = document.createElement('div');
         // set the class to 'fightWindowUIDiv'
-        this.fightWindowUIDiv.setAttribute('class', 'fightWindowUIDiv');
-
-        // create a new p element
-        this.fightWindowUIP = document.createElement('p');
-        // set the class of the p element to 'fightWindowUIP'
-        this.fightWindowUIP.setAttribute('class', 'fightWindowUIP');
-        // set the innerHTML of the fightWindowUIP to the score and mana
-        this.fightWindowUIP.innerHTML = 'Health: ' + player.playerBattler.hitPoints + ' Mana: ' + player.playerBattler.magicPoints + ' Score: ' + player.score;
-        // append the fightWindowUIP to the fightWindowUIDiv
-        this.fightWindowUIDiv.appendChild(this.fightWindowUIP);
-        // append the UIDiv to the fightSection
-        this.fightSection.appendChild(this.fightWindowUIDiv);
+        this.gfxEngine.ui.setAttribute('class', 'fightWindowUIDiv');
+        this.gfxEngine.ui.innerHTML = 'Health: ' + player.playerBattler.hitPoints + ' Mana: ' + player.playerBattler.magicPoints + ' Score: ' + player.score;
     }
 
     // buildRightInputDiv
@@ -153,8 +140,10 @@ class FightInterface
         // set the display to none
         this.rightInputDiv.style.display = "none";
 
-        // append the rightInputDiv to the fightSection
-        this.fightSection.appendChild(this.rightInputDiv);
+
+        this.inputMenus[this.inputMenus.length] = this.rightInpuDiv; 
+        // append the leftInputDiv to the fightSection of the fight interface
+        this.gfxEngine.gameWindow.appendChild(this.rightInputDiv);
     }
 
     // buildOutputWindow
@@ -188,8 +177,10 @@ class FightInterface
         this.outputWindow.appendChild(this.outputWindowText);
         // append the nextIcon to the outputWindow
         this.outputWindow.appendChild(this.outputWindowNextIcon);
-        // append the outputWindow to the fightSection
-        this.fightSection.appendChild(this.outputWindow);
+
+        this.inputMenus[this.inputMenus.length] = this.outputWindow; 
+        // append the leftInputDiv to the fightSection of the fight interface
+        this.gfxEngine.gameWindow.appendChild(this.outputWindow);
     }
 
     // setLeftInputMenu

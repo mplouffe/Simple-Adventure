@@ -16,7 +16,7 @@
 /* FIGHT STATE */
 class FightState
 {
-    constructor(section, canvas, enemy) {
+    constructor(gfxRef, player, enemy) {
         // setting up variables
         this.stateName = "fight";				// name of the current state (used for logic in update method)
         this.waitingForPlayerInput = true;
@@ -30,19 +30,18 @@ class FightState
         this.blinkCounter = 0;
         
         // creating the fight interface
-        fi = new FightInterface(section, canvas);
+        this.fi = new FightInterface(gfxRef);
         // getting the playerBattler from the global player object
         let playerBattler = player.playerBattler;
         // setting the local enemyBattler reference from the enemy object passed in
         let enemyBattler = enemy;
         
         // setting up the spell array
-        // TODO: right now it is just hard coded in, this needs to come from the global palyer object
+        // TODO: right now it is just hard coded in, this needs to come from the player object
         let spellArray = [new Spell("HURT", "damage", 10, 2), new Spell("HEAL", "heal", 10, 2)];
         // add the newly created spell array to the player battler object
         playerBattler.addSpells(spellArray);
         // TODO: this all seems weird. Can't the spells just be an array object already associated with the player global object?
-        // (or whatever object we use to reference the player if changed from Global eventually)
 
         // set up the start of the fight dialog
         let fightStartText = ["A " + enemyBattler.name + " approaches!!!"];
