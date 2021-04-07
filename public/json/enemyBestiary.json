@@ -1,0 +1,21 @@
+{
+    "enemies": [
+        {
+            "id": 1,
+            "name": "Slime",
+            "height": 1,
+            "width": 1,
+            "color": "#00F000",
+            "battler": {
+                "hp": 10,
+                "mp": 0,
+                "str": 1,
+                "weaponStr": 5,
+                "def": 2,
+                "magicDef": 1,
+                "init": 1,
+                "spells": []
+            }
+        }
+    ]
+}

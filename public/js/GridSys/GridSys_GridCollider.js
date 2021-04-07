@@ -170,7 +170,7 @@ class GridCollider
     onPlayerCollidesEnemy(colliders, move)
     {
         let enemy = colliders.filter(collider => collider.type === Colliders.enemy)[0].entity;
-
-        
+        console.log("Collided with enemy: ");
+        console.log(enemy);       
     }
 }
